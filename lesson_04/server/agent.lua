@@ -95,6 +95,13 @@ function REQUEST:login()
 				send_request(proto_pack("enter_scene", player), client_fd)
 			end
 		end
+
+		-- 让 新玩家 把 其他玩家的金币 加入场景
+		local coins = skynet.call("SIMPLEDB", "lua", "get_coins")
+		for id, coin in pairs(coins) do
+			send_request(proto_pack("add_coin_bc", coin), client_fd)
+		end
+
 		-- skynet.send(WATCHDOG, "lua", "sync_actions", client_fd)
 		broadcast_request(proto_pack("sync_info", { info = "All" }), nil)
 	end)
@@ -120,7 +127,6 @@ function REQUEST:remove_coin_req()
 		broadcastall_request(proto_pack("remove_coin_bc", { id = self.id, pickerPlayerId = self.pickerPlayerId }))
 	end
 end
-
 
 local function request(name, args, response)
 	local f = assert(REQUEST[name])

@@ -41,6 +41,10 @@ function command.GET_PLAYERS()
 	return online_players
 end
 
+function command.GET_ALL_COINS()
+	return coins
+end
+
 function command.GET_PLAYER(id)
 	if players[id] then
 		return players[id]
