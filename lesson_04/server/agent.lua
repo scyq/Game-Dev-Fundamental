@@ -97,7 +97,7 @@ function REQUEST:login()
 		end
 
 		-- 让 新玩家 把 其他玩家的金币 加入场景
-		local coins = skynet.call("SIMPLEDB", "lua", "get_coins")
+		local coins = skynet.call("SIMPLEDB", "lua", "get_all_coins")
 		for id, coin in pairs(coins) do
 			send_request(proto_pack("add_coin_bc", coin), client_fd)
 		end
