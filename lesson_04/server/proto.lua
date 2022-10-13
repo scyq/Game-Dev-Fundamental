@@ -19,6 +19,7 @@ login 		2 {
 		name 		0 : string
 		password 	1 : string
 		color       2 : integer
+		modelid     3 : integer
 	}
 }
 
@@ -96,6 +97,7 @@ login 		2 {
 		id 		0 : integer
 		name	1 : string
 		color   2 : integer
+		modelid 3 : integer
 	}
 }
 

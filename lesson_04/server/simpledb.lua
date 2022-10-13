@@ -53,7 +53,7 @@ function command.GET_PLAYER(id)
 end
 
 -- 处理玩家的登录信息
-function command.LOGIN(player_name, player_password, player_color)
+function command.LOGIN(player_name, player_password, player_color, player_modelid)
 	local player_id = name2id[player_name]
 
 	if player_id then
@@ -83,6 +83,7 @@ function command.LOGIN(player_name, player_password, player_color)
 			online   = true,
 			pos      = { math.random(-10, 10), 0, math.random(-5, 15) },
 			facing   = { 1.0, 0.0 },
+			modelid  = player_modelid,
 		}
 
 		for i, v in pairs(player) do
