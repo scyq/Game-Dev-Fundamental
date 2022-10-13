@@ -116,6 +116,7 @@ enter_scene 	4 {
 		scene	3 : integer
 		pos 	4 : *double
 		facing	5 : *double
+		modelid 6 : integer
 	}
 }
 
