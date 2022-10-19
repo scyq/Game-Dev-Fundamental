@@ -1,6 +1,16 @@
 local skynet = require "skynet"
 require "skynet.manager" -- import skynet.register
 require "taskparser"
+
+local online_server = true
+local current_folder = "lesson_05/server" -- 当前文件夹名称，不需要加斜线
+if online_server then
+	package.path = package.path .. ";/home/ubuntu/Game-dev-fundamental/" .. current_folder .. "/?.lua"
+else
+	package.path = package.path .. ";/mnt/c/scyq/Game/dev-basic/Game-dev-fundamental/" .. current_folder .. "/?.lua"
+end
+
+
 local clientReady = {}
 local playerName = {}
 
@@ -171,7 +181,7 @@ skynet.start(function()
 		end
 	end)
 	skynet.register "SIMPLEDB"
-	local res = parser:parseTasks()
+	local res = Parser:parseTasks()
 	for i = 1, #res do
 		local t = res[i]
 		print(t.taskid)
