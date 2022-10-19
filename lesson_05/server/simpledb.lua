@@ -170,4 +170,17 @@ skynet.start(function()
 		end
 	end)
 	skynet.register "SIMPLEDB"
+	local res = parser:parseTasks()
+	for i = 1, #res do
+		local t = res[i]
+		print(t.taskid)
+		print(t.taskname)
+		print(t.taskdesc)
+		print(t.tasktype)
+		for j = 1, #t.tasktarget do
+			print(t.tasktarget[j])
+		end
+		print(t.taskaward)
+		print()
+	end
 end)
