@@ -1,5 +1,6 @@
 local skynet = require "skynet"
 require "skynet.manager" -- import skynet.register
+require "taskparser"
 local clientReady = {}
 local playerName = {}
 

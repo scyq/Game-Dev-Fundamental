@@ -1,4 +1,4 @@
-local parser = {}
+parser = {}
 
 parser.taskFileName = "tasks.txt"
 
