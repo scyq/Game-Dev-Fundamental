@@ -2,7 +2,7 @@ local skynet = require "skynet"
 require "skynet.manager" -- import skynet.register
 require "taskparser"
 
-local online_server = true
+local online_server = false
 local current_folder = "lesson_05/server" -- 当前文件夹名称，不需要加斜线
 if online_server then
 	package.path = package.path .. ";/home/ubuntu/Game-dev-fundamental/" .. current_folder .. "/?.lua"
@@ -10,6 +10,7 @@ else
 	package.path = package.path .. ";/mnt/c/scyq/Game/dev-basic/Game-dev-fundamental/" .. current_folder .. "/?.lua"
 end
 
+local task_list = Parser:parse_tasks()
 
 local clientReady = {}
 local playerName = {}
@@ -61,6 +62,10 @@ end
 
 function command.GET_ALL_COINS()
 	return coins
+end
+
+function command.GET_ALL_TASKLIST()
+	return task_list
 end
 
 -- 处理玩家的登录信息
@@ -181,17 +186,4 @@ skynet.start(function()
 		end
 	end)
 	skynet.register "SIMPLEDB"
-	local res = Parser:parseTasks()
-	for i = 1, #res do
-		local t = res[i]
-		print(t.taskid)
-		print(t.taskname)
-		print(t.taskdesc)
-		print(t.tasktype)
-		for j = 1, #t.tasktarget do
-			print(t.tasktarget[j])
-		end
-		print(t.taskaward)
-		print()
-	end
 end)

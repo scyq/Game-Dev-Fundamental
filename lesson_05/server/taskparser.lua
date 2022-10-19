@@ -1,6 +1,15 @@
 Parser = {}
 
-Parser.taskFileName = "tasks.txt"
+local online_server = true
+local current_folder = "lesson_05/server" -- 当前文件夹名称，不需要加斜线
+local file_prefix = nil
+if online_server then
+    file_prefix = "/home/ubuntu/Game-dev-fundamental/" .. current_folder .. "/"
+else
+    file_prefix = "/mnt/c/scyq/Game/dev-basic/Game-dev-fundamental/" .. current_folder .. "/"
+end
+
+Parser.taskFileName = file_prefix .. "tasks.txt"
 
 function Parser:split(str, reps, foreach)
     local result = {}
@@ -14,15 +23,15 @@ function Parser:split(str, reps, foreach)
     return result
 end
 
-function Parser:readFile()
-    local file = io.open(self.taskFileName, "r")
+function Parser:read_file()
+    local file = assert(io.open(self.taskFileName, "r"))
     local content = file:read("*all")
     file:close()
     return content
 end
 
-function Parser:parseTasks()
-    local tasks = Parser:split(Parser:readFile(), "####")
+function Parser:parse_tasks()
+    local tasks = Parser:split(Parser:read_file(), "####")
     local res = {}
     for i = 1, #tasks do
         local theTask = Parser:split(tasks[i], "\n")
