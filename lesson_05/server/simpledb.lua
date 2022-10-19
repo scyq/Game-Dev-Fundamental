@@ -48,6 +48,10 @@ function command.GET_PLAYER(id)
 	return nil
 end
 
+function command.GET_ALL_COINS()
+	return coins
+end
+
 -- 处理玩家的登录信息
 function command.LOGIN(player_name, player_password, player_color)
 	local player_id = name2id[player_name]
