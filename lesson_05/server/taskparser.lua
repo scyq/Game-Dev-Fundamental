@@ -12,3 +12,5 @@ end
 function parser:parseTasks()
     print(self:readFile())
 end
+
+parser:parseTasks()
