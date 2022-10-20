@@ -27,6 +27,14 @@ local clientReady = false
 local heartbeat_session = nil
 local frame_actions = {}
 
+local arrival_target = {
+	start = false,
+	x = nil,
+	z = nil
+}
+
+math.randomseed(os.time())
+
 
 local function broadcast_request(pack, fd)
 	local package = string.pack(">s2", pack)
@@ -48,16 +56,6 @@ function REQUEST:init() end
 function REQUEST:dead()
 	print("player dead", self.id)
 	skynet.call("SIMPLEDB", "lua", "dead", self.id)
-end
-
-function REQUEST:get_task_list_req()
-	local task_list = skynet.call("SIMPLEDB", "lua", "get_all_tasklist")
-	for index, task in pairs(task_list) do
-		local pack = proto_pack("get_task_bc",
-			{ taskid = task.taskid, taskname = task.taskname, taskdesc = task.taskdesc, tasktype = task.tasktype,
-				tasktarget = task.tasktarget, taskaward = task.taskaward })
-		send_request(pack, client_fd)
-	end
 end
 
 -- 处理玩家的登录请求
@@ -135,6 +133,43 @@ function REQUEST:remove_coin_req()
 	local success = skynet.call("SIMPLEDB", "lua", "REMOVE_COIN", self.id, self.pickerPlayerId)
 	if success then
 		broadcastall_request(proto_pack("remove_coin_bc", { id = self.id, pickerPlayerId = self.pickerPlayerId }))
+	end
+end
+
+function REQUEST:get_task_list_req()
+	local task_list = skynet.call("SIMPLEDB", "lua", "get_all_tasklist")
+	for index, task in pairs(task_list) do
+		local pack = proto_pack("get_task_bc",
+			{ taskid = task.taskid, taskname = task.taskname, taskdesc = task.taskdesc, tasktype = task.tasktype,
+				tasktarget = task.tasktarget, taskaward = task.taskaward })
+		send_request(pack, client_fd)
+	end
+end
+
+local function start_obtain_task()
+	local x = math.random(-9, 24)
+	local z = math.random(-24, 34)
+	local coin = skynet.call("SIMPLEDB", "lua", "ADD_COIN", self.posx, self.posy, self.posz, self.ownerPlayerId)
+	-- TODO
+	-- 把下面这个改成对单一信道的广播
+	broadcastall_request(proto_pack("add_coin_bc", coin))
+end
+
+local function start_arrival_task(x, z)
+	arrival_target.start = true
+	arrival_target.x = x
+	arrival_target.z = z
+	send_request(proto_pack("add_arrival_target", { x = arrival_target.x, z = arrival_target.z }), client_fd)
+end
+
+function REQUEST:start_task_req()
+	local task = skynet.call("SIMPLEDB", "lua", "get_task_by_id", self.taskid)
+	if task.tasktype == 0 then
+		-- 0: 捡金币
+	elseif task.tasktype == 1 then
+		-- 1: 到达任务
+		local where = Parser:split(task[5], " ")
+		start_arrival_task(tonumber(where[1]), tonumber(where[2]))
 	end
 end
 

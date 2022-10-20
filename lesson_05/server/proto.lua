@@ -72,6 +72,12 @@ get_task_list_req 9 {
 	}
 }
 
+start_task_req 10 {
+	request {
+		taskid  0 : integer
+	}
+}
+
 
 ]]
 
@@ -182,6 +188,13 @@ get_task_bc 12 {
 		tasktype 3 : integer
 		tasktarget 4 : string
 		taskaward 5 : string
+	}
+}
+
+add_arrival_target 13 {
+	request {
+		x 0 : double
+		z 1 : double
 	}
 }
 

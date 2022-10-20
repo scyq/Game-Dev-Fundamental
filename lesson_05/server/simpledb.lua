@@ -64,6 +64,15 @@ function command.GET_ALL_COINS()
 	return coins
 end
 
+function command.GET_TASK_BY_ID(taskid)
+	for i, task in pairs(task_list) do
+		if task.taskid == taskid then
+			return task
+		end
+	end
+	return nil
+end
+
 function command.GET_ALL_TASKLIST()
 	return task_list
 end
