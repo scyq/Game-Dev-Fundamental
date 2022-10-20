@@ -42,7 +42,7 @@ function Parser:parse_tasks()
         task.tasktype = tonumber(theTask[4])
         -- 0表示任务类型为获得类，1表示任务类型为到达类
         -- 获得类任务需要两个数值，X物体和N个数量
-        -- 到达类任务需要三个数值，X坐标和Y坐标和Z坐标
+        -- 到达类任务需要两个数值，X坐标和Z坐标
         task.tasktarget = theTask[5]
         task.taskaward = theTask[6]
         table.insert(res, task)

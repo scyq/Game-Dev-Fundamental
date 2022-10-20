@@ -171,7 +171,7 @@ function REQUEST:start_task_req()
 		-- 0: 捡金币
 	elseif task.tasktype == 1 then
 		-- 1: 到达任务
-		local where = Parser:split(task[5], " ")
+		local where = Parser:split(task.tasktarget, " ")
 		start_arrival_task(tonumber(where[1]), tonumber(where[2]))
 	end
 end
