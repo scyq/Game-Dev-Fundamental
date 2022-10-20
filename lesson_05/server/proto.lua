@@ -198,6 +198,12 @@ add_arrival_target 13 {
 	}
 }
 
+task_complete_bc 14 {
+	request {
+		taskid 0 : integer
+	}
+}
+
 
 ]]
 

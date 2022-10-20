@@ -28,6 +28,7 @@ local heartbeat_session = nil
 local frame_actions = {}
 
 local arrival_target = {
+	taskid = nil,
 	start = false,
 	x = nil,
 	z = nil
@@ -126,7 +127,21 @@ function REQUEST:login()
 	end)
 end
 
+local function check_arrival_task(x, z)
+	if (arrival_target.start == false) then
+		return
+	end
+	local x_distance = math.abs(x - arrival_target.x)
+	local z_distance = math.abs(z - arrival_target.z)
+	local distance = math.sqrt(x_distance * x_distance + z_distance * z_distance)
+	if (distance < 5) then
+		arrival_target.start = false
+		send_request(proto_pack("task_complete_bc", { task_id = arrival_target.task_id }), client_fd)
+	end
+end
+
 function REQUEST:snapshoot()
+	check_arrival_task(self.info[1], self.info[3])
 	broadcast_request(proto_pack("snapshootBC", { id = self.id, frame = self.frame, info = self.info }), nil)
 end
 
@@ -166,8 +181,9 @@ local function start_obtain_task()
 	broadcastall_request(proto_pack("add_coin_bc", coin))
 end
 
-local function start_arrival_task(x, z)
+local function start_arrival_task(taskid, x, z)
 	print("start arrival task ... ")
+	arrival_target.taskid = taskid
 	arrival_target.start = true
 	arrival_target.x = x
 	arrival_target.z = z
@@ -182,9 +198,12 @@ function REQUEST:start_task_req()
 	if task.tasktype == 0 then
 		-- 0: 捡金币
 	elseif task.tasktype == 1 then
+		if arrival_target.start == false then
+			return
+		end
 		-- 1: 到达任务
 		local where = split(task.tasktarget, " ")
-		start_arrival_task(tonumber(where[1]), tonumber(where[2]))
+		start_arrival_task(self.taskid, tonumber(where[1]), tonumber(where[2]))
 	end
 end
 
