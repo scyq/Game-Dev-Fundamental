@@ -180,7 +180,7 @@ get_task_bc 12 {
 		taskname 1 : string
 		taskdesc 2 : string
 		tasktype 3 : integer
-		tasktarget 4 : *double
+		tasktarget 4 : string
 		taskaward 5 : string
 	}
 }
