@@ -156,6 +156,7 @@ local function start_obtain_task()
 end
 
 local function start_arrival_task(x, z)
+	print("start arrival task ... ")
 	arrival_target.start = true
 	arrival_target.x = x
 	arrival_target.z = z
@@ -164,7 +165,8 @@ end
 
 function REQUEST:start_task_req()
 	local task = skynet.call("SIMPLEDB", "lua", "get_task_by_id", self.taskid)
-	print("task to start is" .. self.taskid)
+	print("task to start is " .. self.taskid)
+	print("task type is " .. task.tasktype)
 	if task.tasktype == 0 then
 		-- 0: 捡金币
 	elseif task.tasktype == 1 then
