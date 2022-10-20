@@ -50,6 +50,16 @@ function REQUEST:dead()
 	skynet.call("SIMPLEDB", "lua", "dead", self.id)
 end
 
+function REQUEST:get_task_list_req()
+	local task_list = skynet.call("SIMPLEDB", "lua", "get_task_list")
+	for index, task in pairs(task_list) do
+		local pack = proto_pack("get_task_bc",
+			{ taskid = task.taskid, taskname = task.taskname, taskdesc = task.taskdesc, tasktype = task.tasktype,
+				tasktarget = task.tasktarget, taskaward = task.taskaward })
+		send_request(pack, client_fd)
+	end
+end
+
 -- 处理玩家的登录请求
 function REQUEST:login()
 

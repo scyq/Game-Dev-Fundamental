@@ -67,6 +67,11 @@ remove_coin_req  8 {
 	}
 }
 
+get_task_list_req 9 {
+	request {
+	}
+}
+
 
 ]]
 
@@ -166,6 +171,17 @@ remove_coin_bc    11 {
 	request {
 		id               0 : integer
 		pickerPlayerId   1 : integer
+	}
+}
+
+get_task_bc 12 {
+	request {
+		taskid 0 : integer
+		taskname 1 : string
+		taskdesc 2 : string
+		tasktype 3 : integer
+		tasktarget 4 : *double
+		taskaward 5 : string
 	}
 }
 
