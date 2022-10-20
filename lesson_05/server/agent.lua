@@ -198,7 +198,7 @@ function REQUEST:start_task_req()
 	if task.tasktype == 0 then
 		-- 0: 捡金币
 	elseif task.tasktype == 1 then
-		if arrival_target.start == false then
+		if arrival_target.start == true then
 			return
 		end
 		-- 1: 到达任务
