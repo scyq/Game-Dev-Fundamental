@@ -51,7 +51,7 @@ function REQUEST:dead()
 end
 
 function REQUEST:get_task_list_req()
-	local task_list = skynet.call("SIMPLEDB", "lua", "get_task_list")
+	local task_list = skynet.call("SIMPLEDB", "lua", "get_all_tasklist")
 	for index, task in pairs(task_list) do
 		local pack = proto_pack("get_task_bc",
 			{ taskid = task.taskid, taskname = task.taskname, taskdesc = task.taskdesc, tasktype = task.tasktype,
