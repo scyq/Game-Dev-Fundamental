@@ -164,6 +164,7 @@ end
 
 function REQUEST:start_task_req()
 	local task = skynet.call("SIMPLEDB", "lua", "get_task_by_id", self.taskid)
+	print("task to start is" .. self.taskid)
 	if task.tasktype == 0 then
 		-- 0: 捡金币
 	elseif task.tasktype == 1 then
