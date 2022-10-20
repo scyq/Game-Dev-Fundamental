@@ -15,6 +15,14 @@ local socket = require "skynet.socket"
 local sproto = require "sproto"
 local sprotoloader = require "sprotoloader"
 
+local online_server = true
+local current_folder = "lesson_05/server" -- 当前文件夹名称，不需要加斜线
+if online_server then
+	package.path = package.path .. ";/home/ubuntu/Game-dev-fundamental/" .. current_folder .. "/?.lua"
+else
+	package.path = package.path .. ";/mnt/c/scyq/Game/dev-basic/Game-dev-fundamental/" .. current_folder .. "/?.lua"
+end
+
 local WATCHDOG
 local host
 local proto_pack

@@ -2,7 +2,7 @@ local skynet = require "skynet"
 require "skynet.manager" -- import skynet.register
 require "taskparser"
 
-local online_server = false
+local online_server = true
 local current_folder = "lesson_05/server" -- 当前文件夹名称，不需要加斜线
 if online_server then
 	package.path = package.path .. ";/home/ubuntu/Game-dev-fundamental/" .. current_folder .. "/?.lua"
