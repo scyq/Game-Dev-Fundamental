@@ -15,14 +15,6 @@ local socket = require "skynet.socket"
 local sproto = require "sproto"
 local sprotoloader = require "sprotoloader"
 
-local online_server = true
-local current_folder = "lesson_05/server" -- 当前文件夹名称，不需要加斜线
-if online_server then
-	package.path = package.path .. ";/home/ubuntu/Game-dev-fundamental/" .. current_folder .. "/?.lua"
-else
-	package.path = package.path .. ";/mnt/c/scyq/Game/dev-basic/Game-dev-fundamental/" .. current_folder .. "/?.lua"
-end
-
 local WATCHDOG
 local host
 local proto_pack
@@ -43,6 +35,17 @@ local arrival_target = {
 
 math.randomseed(os.time())
 
+local function split(str, reps, foreach)
+	local result = {}
+	local exe_res = string.gsub(str, '[^' .. reps .. ']+', function(w)
+		if (foreach) then
+			foreach(w)
+		end
+		table.insert(result, w)
+	end
+	)
+	return result
+end
 
 local function broadcast_request(pack, fd)
 	local package = string.pack(">s2", pack)
@@ -180,7 +183,7 @@ function REQUEST:start_task_req()
 		-- 0: 捡金币
 	elseif task.tasktype == 1 then
 		-- 1: 到达任务
-		local where = Parser:split(task.tasktarget, " ")
+		local where = split(task.tasktarget, " ")
 		start_arrival_task(tonumber(where[1]), tonumber(where[2]))
 	end
 end
