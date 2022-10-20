@@ -134,9 +134,9 @@ local function check_arrival_task(x, z)
 	local x_distance = math.abs(x - arrival_target.x)
 	local z_distance = math.abs(z - arrival_target.z)
 	local distance = math.sqrt(x_distance * x_distance + z_distance * z_distance)
-	if (distance < 5) then
+	if (distance < 2) then
 		arrival_target.start = false
-		send_request(proto_pack("task_complete_bc", { task_id = arrival_target.task_id }), client_fd)
+		send_request(proto_pack("task_complete_bc", { taskid = arrival_target.taskid }), client_fd)
 	end
 end
 
@@ -182,7 +182,7 @@ local function start_obtain_task()
 end
 
 local function start_arrival_task(taskid, x, z)
-	print("start arrival task ... ")
+	print("start arrival task " .. taskid)
 	arrival_target.taskid = taskid
 	arrival_target.start = true
 	arrival_target.x = x
