@@ -201,6 +201,7 @@ function REQUEST:start_task_req()
 		if arrival_target.start == true then
 			return
 		end
+		print("start arrival task")
 		-- 1: 到达任务
 		local where = split(task.tasktarget, " ")
 		start_arrival_task(self.taskid, tonumber(where[1]), tonumber(where[2]))
