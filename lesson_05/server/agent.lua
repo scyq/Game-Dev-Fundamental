@@ -122,11 +122,11 @@ function REQUEST:login()
 			end
 		end
 
-		-- 让 新玩家 把 其他玩家的金币 加入场景
-		local coins = skynet.call("SIMPLEDB", "lua", "get_all_coins")
-		for id, coin in pairs(coins) do
-			send_request(proto_pack("add_coin_bc", coin), client_fd)
-		end
+		-- -- 让 新玩家 把 其他玩家的金币 加入场景
+		-- local coins = skynet.call("SIMPLEDB", "lua", "get_all_coins")
+		-- for id, coin in pairs(coins) do
+		-- 	send_request(proto_pack("add_coin_bc", coin), client_fd)
+		-- end
 
 		-- skynet.send(WATCHDOG, "lua", "sync_actions", client_fd)
 		broadcast_request(proto_pack("sync_info", { info = "All" }), nil)
@@ -163,10 +163,11 @@ end
 
 -- 这里临时把吃金币的逻辑重构，以后有需求再改
 function REQUEST:remove_coin_req()
-	-- local success = skynet.call("SIMPLEDB", "lua", "REMOVE_COIN", self.id, self.pickerPlayerId)
-	-- if success then
-	-- 	broadcastall_request(proto_pack("remove_coin_bc", { id = self.id, pickerPlayerId = self.pickerPlayerId }))
-	-- end
+	local success = skynet.call("SIMPLEDB", "lua", "REMOVE_COIN", self.id, self.pickerPlayerId)
+	if success then
+		-- 改为单播
+		send_request(proto_pack("remove_coin_bc", { id = self.id, pickerPlayerId = self.pickerPlayerId }), client_fd)
+	end
 end
 
 function REQUEST:get_task_list_req()
@@ -188,7 +189,7 @@ local function start_obtain_task(taskid, objectid, num)
 		local z = math.random(-24, 34)
 		-- -OwnerPlayerId为-1表示是系统生成的
 		local coin = skynet.call("SIMPLEDB", "lua", "ADD_COIN", x, 0.4, z, -1)
-		broadcastall_request(proto_pack("add_coin_bc", coin))
+		send_request(proto_pack("add_coin_bc", coin), client_fd)
 		objects_task.objects[#objects_task + 1] = coin
 	end
 	send_request(proto_pack("start_obtain_task", { taskid = taskid }), client_fd)
