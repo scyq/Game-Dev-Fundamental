@@ -211,6 +211,12 @@ start_obtain_task 15 {
 	}
 }
 
+update_obtain_task_process 16 {
+	request {
+		process 0 : integer
+	}
+}
+
 
 ]]
 

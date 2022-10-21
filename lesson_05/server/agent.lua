@@ -181,6 +181,10 @@ function REQUEST:add_coin_req()
 	broadcastall_request(proto_pack("add_coin_bc", coin))
 end
 
+local function update_obtain_task_process()
+	send_request(proto_pack("update_obtain_task_process", { process = objects_task.current_num }), client_fd)
+end
+
 -- 这里临时把吃金币的逻辑重构，以后有需求再改
 function REQUEST:remove_coin_req()
 	local success = skynet.call("SIMPLEDB", "lua", "REMOVE_COIN", self.id, self.pickerPlayerId)
@@ -188,6 +192,7 @@ function REQUEST:remove_coin_req()
 		-- 改为单播
 		send_request(proto_pack("remove_coin_bc", { id = self.id, pickerPlayerId = self.pickerPlayerId }), client_fd)
 		objects_task.current_num = objects_task.current_num + 1
+		update_obtain_task_process()
 		check_obtain_task()
 	end
 end
