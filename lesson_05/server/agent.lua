@@ -34,6 +34,12 @@ local arrival_target = {
 	z = nil
 }
 
+local objects_task = {
+	start = false,
+	taskid = nil,
+	objects = {}
+}
+
 math.randomseed(os.time())
 
 local function split(str, reps, foreach)
@@ -155,11 +161,12 @@ function REQUEST:add_coin_req()
 	broadcastall_request(proto_pack("add_coin_bc", coin))
 end
 
+-- 这里临时把吃金币的逻辑重构，以后有需求再改
 function REQUEST:remove_coin_req()
-	local success = skynet.call("SIMPLEDB", "lua", "REMOVE_COIN", self.id, self.pickerPlayerId)
-	if success then
-		broadcastall_request(proto_pack("remove_coin_bc", { id = self.id, pickerPlayerId = self.pickerPlayerId }))
-	end
+	-- local success = skynet.call("SIMPLEDB", "lua", "REMOVE_COIN", self.id, self.pickerPlayerId)
+	-- if success then
+	-- 	broadcastall_request(proto_pack("remove_coin_bc", { id = self.id, pickerPlayerId = self.pickerPlayerId }))
+	-- end
 end
 
 function REQUEST:get_task_list_req()
@@ -172,13 +179,18 @@ function REQUEST:get_task_list_req()
 	end
 end
 
-local function start_obtain_task()
-	local x = math.random(-9, 24)
-	local z = math.random(-24, 34)
-	local coin = skynet.call("SIMPLEDB", "lua", "ADD_COIN", self.posx, self.posy, self.posz, self.ownerPlayerId)
-	-- TODO
-	-- 把下面这个改成对单一信道的广播
-	broadcastall_request(proto_pack("add_coin_bc", coin))
+-- 这里只生成金币，反正也只有金币可以生成，就不管其他东西了
+local function start_obtain_task(taskid, objectid, num)
+	objects_task.start = true
+	objects_task.taskid = taskid
+	for i = 1, num do
+		local x = math.random(-9, 24)
+		local z = math.random(-24, 34)
+		-- -OwnerPlayerId为-1表示是系统生成的
+		local coin = skynet.call("SIMPLEDB", "lua", "ADD_COIN", x, 0.4, z, -1)
+		objects_task.objects[#objects_task + 1] = coin
+	end
+	send_request(proto_pack("start_obtain_task", { taskid = taskid }), client_fd)
 end
 
 local function start_arrival_task(taskid, x, z)
@@ -196,7 +208,13 @@ function REQUEST:start_task_req()
 	print("task type is " .. task.tasktype)
 	print("task target is " .. task.tasktarget)
 	if task.tasktype == 0 then
+		if objects_task.start == true then
+			return
+		end
+		print("start obtain task")
 		-- 0: 捡金币
+		local num = split(task.tasktarget, " ")
+		start_obtain_task(self.taskid, tonumber(num[1]), tonumber(num[2]))
 	elseif task.tasktype == 1 then
 		if arrival_target.start == true then
 			return

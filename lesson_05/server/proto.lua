@@ -204,6 +204,12 @@ task_complete_bc 14 {
 	}
 }
 
+start_obtain_task 15 {
+	request {
+		taskid 0 : integer
+	}
+}
+
 
 ]]
 
