@@ -27,6 +27,10 @@ local clientReady = false
 local heartbeat_session = nil
 local frame_actions = {}
 
+local player_tasks = {
+
+}
+
 local arrival_target = {
 	taskid = nil,
 	start = false,
@@ -37,6 +41,8 @@ local arrival_target = {
 local objects_task = {
 	start = false,
 	taskid = nil,
+	target_num = nil,
+	current_num = 0,
 	objects = {}
 }
 
@@ -133,6 +139,15 @@ function REQUEST:login()
 	end)
 end
 
+local function task_complete(taskid)
+	for i = 1, #player_tasks do
+		if player_tasks[i].taskid == taskid then
+			player_tasks[i].state = 2
+			send_request(proto_pack("task_complete_bc", { taskid = taskid }), client_fd)
+		end
+	end
+end
+
 local function check_arrival_task(x, z)
 	if (arrival_target.start == false) then
 		return
@@ -142,7 +157,13 @@ local function check_arrival_task(x, z)
 	local distance = math.sqrt(x_distance * x_distance + z_distance * z_distance)
 	if (distance < 2) then
 		arrival_target.start = false
-		send_request(proto_pack("task_complete_bc", { taskid = arrival_target.taskid }), client_fd)
+		task_complete(arrival_target.taskid)
+	end
+end
+
+local function check_obtain_task()
+	if objects_task.current_num >= objects_task.target_num then
+		task_complete(objects_task.taskid)
 	end
 end
 
@@ -167,7 +188,18 @@ function REQUEST:remove_coin_req()
 	if success then
 		-- 改为单播
 		send_request(proto_pack("remove_coin_bc", { id = self.id, pickerPlayerId = self.pickerPlayerId }), client_fd)
+		objects_task.current_num = objects_task.current_num + 1
+		check_obtain_task()
 	end
+end
+
+local function get_task_state(taskid)
+	for i = 1, #player_tasks do
+		if player_tasks[i].taskid == taskid then
+			return player_tasks[i].state
+		end
+	end
+	return 0
 end
 
 function REQUEST:get_task_list_req()
@@ -175,7 +207,7 @@ function REQUEST:get_task_list_req()
 	for index, task in pairs(task_list) do
 		local pack = proto_pack("get_task_bc",
 			{ taskid = task.taskid, taskname = task.taskname, taskdesc = task.taskdesc, tasktype = task.tasktype,
-				tasktarget = task.tasktarget, taskaward = task.taskaward })
+				tasktarget = task.tasktarget, taskaward = task.taskaward, taskstate = get_task_state(task.taskid) })
 		send_request(pack, client_fd)
 	end
 end
@@ -184,6 +216,7 @@ end
 local function start_obtain_task(taskid, objectid, num)
 	objects_task.start = true
 	objects_task.taskid = taskid
+	objects_task.target_num = num
 	for i = 1, num do
 		local x = math.random(-9, 24)
 		local z = math.random(-24, 34)
@@ -204,11 +237,16 @@ local function start_arrival_task(taskid, x, z)
 	send_request(proto_pack("add_arrival_target", { x = arrival_target.x, z = arrival_target.z }), client_fd)
 end
 
+-- 任务状态
+-- 0 未接受
+-- 1 已接受
+-- 2 已完成
 function REQUEST:start_task_req()
 	local task = skynet.call("SIMPLEDB", "lua", "get_task_by_id", self.taskid)
 	print("task to start is " .. self.taskid)
 	print("task type is " .. task.tasktype)
 	print("task target is " .. task.tasktarget)
+	player_tasks[#player_tasks + 1] = { taskid = self.taskid, state = 1 }
 	if task.tasktype == 0 then
 		if objects_task.start == true then
 			return

@@ -188,6 +188,7 @@ get_task_bc 12 {
 		tasktype 3 : integer
 		tasktarget 4 : string
 		taskaward 5 : string
+		taskstate 6 : integer
 	}
 }
 
