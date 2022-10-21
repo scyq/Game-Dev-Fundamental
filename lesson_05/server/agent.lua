@@ -156,12 +156,14 @@ local function check_arrival_task(x, z)
 	local z_distance = math.abs(z - arrival_target.z)
 	local distance = math.sqrt(x_distance * x_distance + z_distance * z_distance)
 	if (distance < 2) then
+		arrival_target.start = false
 		task_complete(arrival_target.taskid)
 	end
 end
 
 local function check_obtain_task()
 	if objects_task.current_num >= objects_task.target_num then
+		objects_task.start = false;
 		task_complete(objects_task.taskid)
 	end
 end
