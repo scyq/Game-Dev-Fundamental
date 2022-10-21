@@ -188,6 +188,7 @@ local function start_obtain_task(taskid, objectid, num)
 		local z = math.random(-24, 34)
 		-- -OwnerPlayerId为-1表示是系统生成的
 		local coin = skynet.call("SIMPLEDB", "lua", "ADD_COIN", x, 0.4, z, -1)
+		broadcastall_request(proto_pack("add_coin_bc", coin))
 		objects_task.objects[#objects_task + 1] = coin
 	end
 	send_request(proto_pack("start_obtain_task", { taskid = taskid }), client_fd)
