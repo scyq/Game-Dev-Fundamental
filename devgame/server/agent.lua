@@ -65,54 +65,52 @@ end
 
 -- 处理玩家的登录请求
 function REQUEST:login()
-	print("Heereeeeeeeeeeeeeeeeee")
-	print(self.model)
-	-- -- 与后台数据库交互，获取玩家ID。如果是从未登录过的玩家，将会自动分配一个新的ID
-	-- player_id = skynet.call("SIMPLEDB", "lua", "login", self.name, self.password, self.model)
+	-- 与后台数据库交互，获取玩家ID。如果是从未登录过的玩家，将会自动分配一个新的ID
+	player_id = skynet.call("SIMPLEDB", "lua", "login", self.name, self.password, self.model)
 
-	-- -- 向新玩家告知他被分配到的ID
-	-- send_request(proto_pack("login", { id = player_id, name = self.name, model = self.model }), client_fd)
-	-- skynet.error(">>>>> db return:" .. player_id)
+	-- 向新玩家告知他被分配到的ID
+	send_request(proto_pack("login", { id = player_id, name = self.name, model = self.model }), client_fd)
+	skynet.error(">>>>> db return:" .. player_id)
 
-	-- -- 如果 id == -1，说明密码错误或者已经在线，无法登陆
-	-- if player_id < 0 then
-	-- 	skynet.send(WATCHDOG, "lua", "close", client_fd)
-	-- 	return
-	-- end
+	-- 如果 id == -1，说明密码错误或者已经在线，无法登陆
+	if player_id < 0 then
+		skynet.send(WATCHDOG, "lua", "close", client_fd)
+		return
+	end
 
-	-- -- 让 新玩家 加载场景，并把自己加入场景
-	-- local player = skynet.call("SIMPLEDB", "lua", "get_player", player_id)
-	-- send_request(proto_pack("enter_scene", player), client_fd)
-	-- skynet.send(WATCHDOG, "lua", "login", player_id)
+	-- 让 新玩家 加载场景，并把自己加入场景
+	local player = skynet.call("SIMPLEDB", "lua", "get_player", player_id)
+	send_request(proto_pack("enter_scene", player), client_fd)
+	skynet.send(WATCHDOG, "lua", "login", player_id)
 
-	-- -- 由于加载场景可能耗费较长时间，为了防止玩家加载不完场景，这里需要先等待一段时间再发送后续消息
-	-- -- skynet提供了休眠函数：skynet.sleep(time)。调用后，当前进程将休眠
-	-- -- 但是，所有玩家是共用同一个agent的，如果这个agent休眠了，那其他玩家怎么办呢？
-	-- -- 我们可以复制一个新的agent，只让新的agent休眠，让原来的agent继续服务其他玩家
-	-- -- skynet提供了linux格式的fork函数，可以用来“复制”进程
+	-- 由于加载场景可能耗费较长时间，为了防止玩家加载不完场景，这里需要先等待一段时间再发送后续消息
+	-- skynet提供了休眠函数：skynet.sleep(time)。调用后，当前进程将休眠
+	-- 但是，所有玩家是共用同一个agent的，如果这个agent休眠了，那其他玩家怎么办呢？
+	-- 我们可以复制一个新的agent，只让新的agent休眠，让原来的agent继续服务其他玩家
+	-- skynet提供了linux格式的fork函数，可以用来“复制”进程
 
-	-- skynet.fork(function()
-	-- 	-- fork：复制当前进程，然后让新进程执行括号里的代码，而旧进程将跳过这段代码
-	-- 	-- 这里fork的括号里写的是一个function，所以就会执行这个function
+	skynet.fork(function()
+		-- fork：复制当前进程，然后让新进程执行括号里的代码，而旧进程将跳过这段代码
+		-- 这里fork的括号里写的是一个function，所以就会执行这个function
 
-	-- 	-- 等待一段时间（1s）
-	-- 	skynet.sleep(100)
+		-- 等待一段时间（1s）
+		skynet.sleep(100)
 
-	-- 	-- 让 其他玩家 把 新玩家 加入场景
-	-- 	local player = skynet.call("SIMPLEDB", "lua", "get_player", player_id)
-	-- 	broadcast_request(proto_pack("enter_scene", player), client_fd)
+		-- 让 其他玩家 把 新玩家 加入场景
+		local player = skynet.call("SIMPLEDB", "lua", "get_player", player_id)
+		broadcast_request(proto_pack("enter_scene", player), client_fd)
 
-	-- 	-- 让 新玩家 把 其他玩家 加入场景
-	-- 	local players = skynet.call("SIMPLEDB", "lua", "get_players")
-	-- 	for id, player in pairs(players) do
-	-- 		if id ~= player_id then
-	-- 			send_request(proto_pack("enter_scene", player), client_fd)
-	-- 		end
-	-- 	end
+		-- 让 新玩家 把 其他玩家 加入场景
+		local players = skynet.call("SIMPLEDB", "lua", "get_players")
+		for id, player in pairs(players) do
+			if id ~= player_id then
+				send_request(proto_pack("enter_scene", player), client_fd)
+			end
+		end
 
-	-- 	-- skynet.send(WATCHDOG, "lua", "sync_actions", client_fd)
-	-- 	broadcast_request(proto_pack("sync_info", { info = "All" }), nil)
-	-- end)
+		-- skynet.send(WATCHDOG, "lua", "sync_actions", client_fd)
+		broadcast_request(proto_pack("sync_info", { info = "All" }), nil)
+	end)
 end
 
 function REQUEST:snapshoot()

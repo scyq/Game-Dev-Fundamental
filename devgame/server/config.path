@@ -1,6 +1,6 @@
 root = "./"
 online_server = true
-current_folder = "lesson_05/server" -- 当前文件夹名称，不需要加斜线
+current_folder = "devgame/server" -- 当前文件夹名称，不需要加斜线
 if online_server then
     run_path = "/home/ubuntu/Game-dev-fundamental/"
 else
