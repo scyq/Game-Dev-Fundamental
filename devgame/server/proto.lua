@@ -51,34 +51,6 @@ dead		6 {
 	}
 }
 
-add_coin_req    7 {
-	request {
-		posx 	         0 : double
-		posy 	         1 : double
-		posz             2 : double
-		ownerPlayerId    3 : integer
-	}
-}
-
-remove_coin_req  8 {
-	request {
-		id               0 : integer
-		pickerPlayerId   1 : integer
-	}
-}
-
-get_task_list_req 9 {
-	request {
-	}
-}
-
-start_task_req 10 {
-	request {
-		taskid  0 : integer
-	}
-}
-
-
 ]]
 
 proto.s2c = sprotoparser.parse [[
@@ -162,61 +134,6 @@ snapshootBC 9 {
 		anim	2 : string
 	}
 }
-
-add_coin_bc    10 {
-	request {
-		id               0 : integer
-		posx 	         1 : double
-		posy 	         2 : double
-		posz             3 : double
-		ownerPlayerId    4 : integer
-	}
-}
-
-remove_coin_bc    11 {
-	request {
-		id               0 : integer
-		pickerPlayerId   1 : integer
-	}
-}
-
-get_task_bc 12 {
-	request {
-		taskid 0 : integer
-		taskname 1 : string
-		taskdesc 2 : string
-		tasktype 3 : integer
-		tasktarget 4 : string
-		taskaward 5 : string
-		taskstate 6 : integer
-	}
-}
-
-add_arrival_target 13 {
-	request {
-		x 0 : double
-		z 1 : double
-	}
-}
-
-task_complete_bc 14 {
-	request {
-		taskid 0 : integer
-	}
-}
-
-start_obtain_task 15 {
-	request {
-		taskid 0 : integer
-	}
-}
-
-update_obtain_task_process 16 {
-	request {
-		process 0 : integer
-	}
-}
-
 
 ]]
 
