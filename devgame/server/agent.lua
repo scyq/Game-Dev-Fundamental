@@ -65,7 +65,7 @@ end
 
 -- 处理玩家的登录请求
 function REQUEST:login()
-
+	print(self.model)
 	-- 与后台数据库交互，获取玩家ID。如果是从未登录过的玩家，将会自动分配一个新的ID
 	player_id = skynet.call("SIMPLEDB", "lua", "login", self.name, self.password, self.model)
 
