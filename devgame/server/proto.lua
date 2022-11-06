@@ -18,7 +18,7 @@ login 		2 {
 	request {
 		name 		0 : string
 		password 	1 : string
-		color       2 : integer
+		model       2 : string
 	}
 }
 
@@ -106,7 +106,7 @@ login 		2 {
 	request {
 		id 		0 : integer
 		name	1 : string
-		color   2 : integer
+		model   2 : string
 	}
 }
 

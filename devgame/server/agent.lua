@@ -27,25 +27,6 @@ local clientReady = false
 local heartbeat_session = nil
 local frame_actions = {}
 
-local player_tasks = {
-
-}
-
-local arrival_target = {
-	taskid = nil,
-	start = false,
-	x = nil,
-	z = nil
-}
-
-local objects_task = {
-	start = false,
-	taskid = nil,
-	target_num = nil,
-	current_num = 0,
-	objects = {}
-}
-
 math.randomseed(os.time())
 
 local function split(str, reps, foreach)
@@ -86,10 +67,10 @@ end
 function REQUEST:login()
 
 	-- 与后台数据库交互，获取玩家ID。如果是从未登录过的玩家，将会自动分配一个新的ID
-	player_id = skynet.call("SIMPLEDB", "lua", "login", self.name, self.password, self.color)
+	player_id = skynet.call("SIMPLEDB", "lua", "login", self.name, self.password, self.model)
 
 	-- 向新玩家告知他被分配到的ID
-	send_request(proto_pack("login", { id = player_id, name = self.name, color = self.color }), client_fd)
+	send_request(proto_pack("login", { id = player_id, name = self.name, model = self.model }), client_fd)
 	skynet.error(">>>>> db return:" .. player_id)
 
 	-- 如果 id == -1，说明密码错误或者已经在线，无法登陆
