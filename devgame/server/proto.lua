@@ -121,7 +121,7 @@ enter_scene 	4 {
 	request {	
 		id 		0 : integer
 		name	1 : string
-		color   2 : integer
+		model   2 : string
 		scene	3 : integer
 		pos 	4 : *double
 		facing	5 : *double
