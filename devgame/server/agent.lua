@@ -65,6 +65,7 @@ end
 
 -- 处理玩家的登录请求
 function REQUEST:login()
+	print("Heereeeeeeeeeeeeeeeeee")
 	print(self.model)
 	-- 与后台数据库交互，获取玩家ID。如果是从未登录过的玩家，将会自动分配一个新的ID
 	player_id = skynet.call("SIMPLEDB", "lua", "login", self.name, self.password, self.model)
@@ -108,12 +109,6 @@ function REQUEST:login()
 				send_request(proto_pack("enter_scene", player), client_fd)
 			end
 		end
-
-		-- -- 让 新玩家 把 其他玩家的金币 加入场景
-		-- local coins = skynet.call("SIMPLEDB", "lua", "get_all_coins")
-		-- for id, coin in pairs(coins) do
-		-- 	send_request(proto_pack("add_coin_bc", coin), client_fd)
-		-- end
 
 		-- skynet.send(WATCHDOG, "lua", "sync_actions", client_fd)
 		broadcast_request(proto_pack("sync_info", { info = "All" }), nil)
