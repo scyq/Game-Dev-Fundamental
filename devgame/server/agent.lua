@@ -139,83 +139,13 @@ function REQUEST:login()
 	end)
 end
 
-local function task_complete(taskid)
-	for i = 1, #player_tasks do
-		if player_tasks[i].taskid == taskid then
-			player_tasks[i].state = 2
-			send_request(proto_pack("task_complete_bc", { taskid = taskid }), client_fd)
-		end
-	end
-end
-
-local function check_arrival_task(x, z)
-	if (arrival_target.start == false) then
-		return
-	end
-	local x_distance = math.abs(x - arrival_target.x)
-	local z_distance = math.abs(z - arrival_target.z)
-	local distance = math.sqrt(x_distance * x_distance + z_distance * z_distance)
-	if (distance < 2) then
-		arrival_target.start = false
-		task_complete(arrival_target.taskid)
-	end
-end
-
-local function check_obtain_task()
-	if objects_task.current_num >= objects_task.target_num then
-		objects_task.start = false;
-		task_complete(objects_task.taskid)
-	end
-end
-
 function REQUEST:snapshoot()
-	check_arrival_task(self.info[1], self.info[3])
-	broadcast_request(proto_pack("snapshootBC", { id = self.id, frame = self.frame, info = self.info }), nil)
+	broadcast_request(proto_pack("snapshootBC", { id = self.id, info = self.info, anim = self.anim }), nil)
 end
 
 function REQUEST:action()
 	broadcast_request(proto_pack("actionBC",
 		{ id = self.id, frame = self.frame, input = self.input, facing = self.facing }), nil)
-end
-
-function REQUEST:add_coin_req()
-	local coin = skynet.call("SIMPLEDB", "lua", "ADD_COIN", self.posx, self.posy, self.posz, self.ownerPlayerId)
-	broadcastall_request(proto_pack("add_coin_bc", coin))
-end
-
-local function update_obtain_task_process()
-	send_request(proto_pack("update_obtain_task_process", { process = objects_task.current_num }), client_fd)
-end
-
--- 这里临时把吃金币的逻辑重构，以后有需求再改
-function REQUEST:remove_coin_req()
-	local success = skynet.call("SIMPLEDB", "lua", "REMOVE_COIN", self.id, self.pickerPlayerId)
-	if success then
-		-- 改为单播
-		send_request(proto_pack("remove_coin_bc", { id = self.id, pickerPlayerId = self.pickerPlayerId }), client_fd)
-		objects_task.current_num = objects_task.current_num + 1
-		update_obtain_task_process()
-		check_obtain_task()
-	end
-end
-
-local function get_task_state(taskid)
-	for i = 1, #player_tasks do
-		if player_tasks[i].taskid == taskid then
-			return player_tasks[i].state
-		end
-	end
-	return 0
-end
-
-function REQUEST:get_task_list_req()
-	local task_list = skynet.call("SIMPLEDB", "lua", "get_all_tasklist")
-	for index, task in pairs(task_list) do
-		local pack = proto_pack("get_task_bc",
-			{ taskid = task.taskid, taskname = task.taskname, taskdesc = task.taskdesc, tasktype = task.tasktype,
-				tasktarget = task.tasktarget, taskaward = task.taskaward, taskstate = get_task_state(task.taskid) })
-		send_request(pack, client_fd)
-	end
 end
 
 -- 这里只生成金币，反正也只有金币可以生成，就不管其他东西了
@@ -241,35 +171,6 @@ local function start_arrival_task(taskid, x, z)
 	arrival_target.x = x
 	arrival_target.z = z
 	send_request(proto_pack("add_arrival_target", { x = arrival_target.x, z = arrival_target.z }), client_fd)
-end
-
--- 任务状态
--- 0 未接受
--- 1 已接受
--- 2 已完成
-function REQUEST:start_task_req()
-	local task = skynet.call("SIMPLEDB", "lua", "get_task_by_id", self.taskid)
-	print("task to start is " .. self.taskid)
-	print("task type is " .. task.tasktype)
-	print("task target is " .. task.tasktarget)
-	player_tasks[#player_tasks + 1] = { taskid = self.taskid, state = 1 }
-	if task.tasktype == 0 then
-		if objects_task.start == true then
-			return
-		end
-		print("start obtain task")
-		-- 0: 捡金币
-		local num = split(task.tasktarget, " ")
-		start_obtain_task(self.taskid, tonumber(num[1]), tonumber(num[2]))
-	elseif task.tasktype == 1 then
-		if arrival_target.start == true then
-			return
-		end
-		print("start arrival task")
-		-- 1: 到达任务
-		local where = split(task.tasktarget, " ")
-		start_arrival_task(self.taskid, tonumber(where[1]), tonumber(where[2]))
-	end
 end
 
 local function request(name, args, response)

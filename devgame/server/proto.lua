@@ -40,8 +40,8 @@ action		 4 {
 snapshoot	5 {
 	request {
 		id 		0 : integer
-		frame 	1 : integer
-		info	2 : *double 
+		info	1 : *double 
+		anim	2 : string
 	}
 }
 
@@ -158,8 +158,8 @@ actionBC 8 {
 snapshootBC 9 {
 	request {
 		id 		0 : integer
-		frame 	1 : integer
-		info	2 : *double 
+		info	1 : *double 
+		anim	2 : string
 	}
 }
 
