@@ -194,14 +194,14 @@ function CMD.start(conf)
 	host = sprotoloader.load(1):host "package"
 	proto_pack = host:attach(sprotoloader.load(2))
 	clientReady = false
-	skynet.fork(function()
-		while true do
-			if clientReady then
-				send_request(proto_pack("heartbeat"), fd)
-			end
-			skynet.sleep(500)
-		end
-	end)
+	-- skynet.fork(function()
+	-- 	while true do
+	-- 		if clientReady then
+	-- 			send_request(proto_pack("heartbeat"), fd)
+	-- 		end
+	-- 		skynet.sleep(500)
+	-- 	end
+	-- end)
 	skynet.fork(function()
 		while true do
 			if clientReady then
