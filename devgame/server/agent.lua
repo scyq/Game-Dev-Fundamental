@@ -134,8 +134,6 @@ end
 
 function REQUEST:start_game_req()
 	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START")
-	print("game_start")
-	print(game_start)
 	if game_start == false then
 		print("Game Start....")
 		skynet.call("SIMPLEDB", "lua", "SET_GAME_START", true)
@@ -145,7 +143,8 @@ function REQUEST:start_game_req()
 		local index = 1
 		for id, player in pairs(players) do
 			if index == ghost then
-				broadcastall_request(proto_pack("start_game", player.id))
+				print("Ghost is " .. id)
+				broadcastall_request(proto_pack("start_game", { ghost = id }))
 				break
 			end
 			index = index + 1
