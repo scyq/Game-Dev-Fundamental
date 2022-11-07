@@ -24,22 +24,8 @@ local player_id
 local CMD = {}
 local REQUEST = {}
 local clientReady = false
-local heartbeat_session = nil
-local frame_actions = {}
 
 math.randomseed(os.time())
-
-local function split(str, reps, foreach)
-	local result = {}
-	local exe_res = string.gsub(str, '[^' .. reps .. ']+', function(w)
-		if (foreach) then
-			foreach(w)
-		end
-		table.insert(result, w)
-	end
-	)
-	return result
-end
 
 local function broadcast_request(pack, fd)
 	local package = string.pack(">s2", pack)
@@ -151,6 +137,13 @@ function REQUEST:catch_player_req()
 	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START")
 	if game_start == true then
 		broadcastall_request(proto_pack("catch_player", { id = self.id }))
+	end
+end
+
+function REQUEST:save_player_req()
+	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START")
+	if game_start == true then
+		broadcastall_request(proto_pack("save_player", { id = self.id }))
 	end
 end
 
