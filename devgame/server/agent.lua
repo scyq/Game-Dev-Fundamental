@@ -112,7 +112,8 @@ function REQUEST:login()
 end
 
 function REQUEST:snapshoot()
-	broadcast_request(proto_pack("snapshootBC", { id = self.id, info = self.info, anim = self.anim }), nil)
+	broadcast_request(proto_pack("snapshootBC",
+		{ id = self.id, info = self.info, anim = self.anim, animtime = self.animtime }), nil)
 end
 
 function REQUEST:action()

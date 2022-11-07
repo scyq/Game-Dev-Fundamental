@@ -42,6 +42,7 @@ snapshoot	5 {
 		id 		0 : integer
 		info	1 : *double 
 		anim	2 : string
+		animtime 3 : double
 	}
 }
 
@@ -132,6 +133,7 @@ snapshootBC 9 {
 		id 		0 : integer
 		info	1 : *double 
 		anim	2 : string
+		animtime 3 : double
 	}
 }
 
