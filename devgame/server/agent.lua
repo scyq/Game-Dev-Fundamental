@@ -127,11 +127,6 @@ function REQUEST:snapshoot()
 		{ id = self.id, info = self.info, anim = self.anim, animtime = self.animtime }))
 end
 
-function REQUEST:action()
-	broadcastall_request(proto_pack("actionBC",
-		{ id = self.id, frame = self.frame, input = self.input, facing = self.facing }))
-end
-
 function REQUEST:start_game_req()
 	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START")
 	if game_start == false then
@@ -149,6 +144,13 @@ function REQUEST:start_game_req()
 			end
 			index = index + 1
 		end
+	end
+end
+
+function REQUEST:catch_player_req()
+	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START")
+	if game_start == true then
+		broadcastall_request(proto_pack("catch_player", { id = self.id }))
 	end
 end
 
