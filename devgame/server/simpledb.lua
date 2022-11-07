@@ -19,6 +19,8 @@ local name2id = {}
 
 local max_actor_id = 10000
 
+local game_start = false
+
 function command.REMOVE(id)
 	local name = playerName[id]
 	clientReady[id] = nil
@@ -60,6 +62,14 @@ function command.GET_PLAYER_COUNTS()
 		cnt = cnt + 1
 	end
 	return cnt
+end
+
+function command:GET_GAME_START()
+	return game_start
+end
+
+function command.SET_GAME_START(value)
+	game_start = value
 end
 
 -- 处理玩家的登录信息

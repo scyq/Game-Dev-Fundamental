@@ -52,6 +52,12 @@ dead		6 {
 	}
 }
 
+start_game_req 7 {
+	request {
+		id 		0 : integer
+	}
+}
+
 ]]
 
 proto.s2c = sprotoparser.parse [[
@@ -140,6 +146,17 @@ snapshootBC 9 {
 playerCountBC 10 {
 	request {
 		count 0 : integer
+	}
+}
+
+ready_start 11 {
+	request {
+	}
+}
+
+start_game 12 {
+	request {
+		ghost 0 : integer
 	}
 }
 

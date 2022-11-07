@@ -99,10 +99,17 @@ function REQUEST:login()
 		local player = skynet.call("SIMPLEDB", "lua", "get_player", player_id)
 		broadcast_request(proto_pack("enter_scene", player), client_fd)
 
+
+		-- 获得现在人数
+		local player_count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS")
+
 		-- 广播现在人数
-		broadcast_request(proto_pack("playerCountBC", { count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS") }), nil)
+		broadcastall_request(proto_pack("playerCountBC", { count = player_count }))
 
 		-- TODO 最后一个进入游戏的玩家判定是否可以开始游戏
+		if player_count == 2 then
+			broadcastall_request(proto_pack("ready_start", nil))
+		end
 
 		-- 让 新玩家 把 其他玩家 加入场景
 		local players = skynet.call("SIMPLEDB", "lua", "get_players")
@@ -116,13 +123,23 @@ function REQUEST:login()
 end
 
 function REQUEST:snapshoot()
-	broadcast_request(proto_pack("snapshootBC",
-		{ id = self.id, info = self.info, anim = self.anim, animtime = self.animtime }), nil)
+	broadcastall_request(proto_pack("snapshootBC",
+		{ id = self.id, info = self.info, anim = self.anim, animtime = self.animtime }))
 end
 
 function REQUEST:action()
-	broadcast_request(proto_pack("actionBC",
-		{ id = self.id, frame = self.frame, input = self.input, facing = self.facing }), nil)
+	broadcastall_request(proto_pack("actionBC",
+		{ id = self.id, frame = self.frame, input = self.input, facing = self.facing }))
+end
+
+function REQUEST:start_game_req()
+	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START")
+	if game_start == false then
+		skynet.call("SIMPLEDB", "lua", "SET_GAME_START", true)
+		local player_count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS")
+		local ghost = math.random(1, player_count)
+		broadcastall_request(proto_pack("start_game", ghost))
+	end
 end
 
 local function request(name, args, response)
