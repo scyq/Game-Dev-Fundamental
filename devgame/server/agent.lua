@@ -93,7 +93,7 @@ function REQUEST:login()
 		broadcastall_request(proto_pack("playerCountBC", { count = player_count }))
 
 		-- TODO 最后一个进入游戏的玩家判定是否可以开始游戏
-		if player_count == 2 then
+		if player_count == 3 then
 			broadcastall_request(proto_pack("ready_start", nil))
 		end
 
