@@ -88,7 +88,6 @@ function REQUEST:login()
 	-- 但是，所有玩家是共用同一个agent的，如果这个agent休眠了，那其他玩家怎么办呢？
 	-- 我们可以复制一个新的agent，只让新的agent休眠，让原来的agent继续服务其他玩家
 	-- skynet提供了linux格式的fork函数，可以用来“复制”进程
-
 	skynet.fork(function()
 		-- fork：复制当前进程，然后让新进程执行括号里的代码，而旧进程将跳过这段代码
 		-- 这里fork的括号里写的是一个function，所以就会执行这个function
@@ -99,6 +98,11 @@ function REQUEST:login()
 		-- 让 其他玩家 把 新玩家 加入场景
 		local player = skynet.call("SIMPLEDB", "lua", "get_player", player_id)
 		broadcast_request(proto_pack("enter_scene", player), client_fd)
+
+		-- 广播现在人数
+		broadcast_request(proto_pack("playerCountBC", { count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS") }), nil)
+
+		-- TODO 最后一个进入游戏的玩家判定是否可以开始游戏
 
 		-- 让 新玩家 把 其他玩家 加入场景
 		local players = skynet.call("SIMPLEDB", "lua", "get_players")
@@ -119,31 +123,6 @@ end
 function REQUEST:action()
 	broadcast_request(proto_pack("actionBC",
 		{ id = self.id, frame = self.frame, input = self.input, facing = self.facing }), nil)
-end
-
--- 这里只生成金币，反正也只有金币可以生成，就不管其他东西了
-local function start_obtain_task(taskid, objectid, num)
-	objects_task.start = true
-	objects_task.taskid = taskid
-	objects_task.target_num = num
-	for i = 1, num do
-		local x = math.random(-9, 24)
-		local z = math.random(-24, 34)
-		-- -OwnerPlayerId为-1表示是系统生成的
-		local coin = skynet.call("SIMPLEDB", "lua", "ADD_COIN", x, 0.4, z, -1)
-		send_request(proto_pack("add_coin_bc", coin), client_fd)
-		objects_task.objects[#objects_task + 1] = coin
-	end
-	send_request(proto_pack("start_obtain_task", { taskid = taskid }), client_fd)
-end
-
-local function start_arrival_task(taskid, x, z)
-	print("start arrival task " .. taskid)
-	arrival_target.taskid = taskid
-	arrival_target.start = true
-	arrival_target.x = x
-	arrival_target.z = z
-	send_request(proto_pack("add_arrival_target", { x = arrival_target.x, z = arrival_target.z }), client_fd)
 end
 
 local function request(name, args, response)

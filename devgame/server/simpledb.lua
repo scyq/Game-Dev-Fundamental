@@ -20,9 +20,6 @@ local name2id = {}
 
 local max_actor_id = 10000
 
-local coins = {}
-local max_coin_id = 20000
-
 function command.REMOVE(id)
 	local name = playerName[id]
 	clientReady[id] = nil
@@ -58,8 +55,12 @@ function command.GET_PLAYER(id)
 	return nil
 end
 
-function command.GET_ALL_COINS()
-	return coins
+function command.GET_PLAYER_COUNTS()
+	local cnt = 0
+	for i, player in pairs(players) do
+		cnt = cnt + 1
+	end
+	return cnt
 end
 
 -- 处理玩家的登录信息
@@ -123,40 +124,6 @@ function command.LOGOUT(player_id)
 	for id, player in pairs(players) do
 		skynet.error("player[" .. id .. "] online:" .. tostring(player.online))
 	end
-
-end
-
-function command.ADD_COIN(x, y, z, ownerId)
-	local coin_id = max_coin_id
-	max_coin_id = max_coin_id + 1
-	print("add coin" .. coin_id)
-	local coin = {
-		id = coin_id,
-		posx = x,
-		posy = y,
-		posz = z,
-		ownerPlayerId = ownerId,
-		status = true
-	}
-	coins[coin_id] = coin
-	return coin
-end
-
-function command.REMOVE_COIN(coin_id, pickerId)
-
-	if coins[coin_id] then
-		if coins[coin_id].status then
-			-- 默认自己不能摘取自己放置的
-			if coins[coin_id].ownerPlayerId ~= pickerId then
-				coins[coin_id].status = false
-				coins[coin_id].pickerPlayerId = pickerId
-				print("remove coin:" .. coin_id .. " by:" .. pickerId)
-				return true
-			end
-		end
-	end
-
-	return false
 
 end
 

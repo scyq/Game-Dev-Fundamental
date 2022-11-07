@@ -137,6 +137,12 @@ snapshootBC 9 {
 	}
 }
 
+playerCountBC 10 {
+	request {
+		count 0 : integer
+	}
+}
+
 ]]
 
 return proto
