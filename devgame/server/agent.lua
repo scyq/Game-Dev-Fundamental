@@ -141,10 +141,7 @@ function REQUEST:catch_player_req()
 end
 
 function REQUEST:save_player_req()
-	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START")
-	if game_start == true then
-		broadcastall_request(proto_pack("save_player", { id = self.id }))
-	end
+	broadcastall_request(proto_pack("save_player", { id = self.id }))
 end
 
 local function request(name, args, response)
