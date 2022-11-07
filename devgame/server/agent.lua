@@ -133,12 +133,21 @@ function REQUEST:action()
 end
 
 function REQUEST:start_game_req()
+	print("Game Start....")
 	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START")
 	if game_start == false then
 		skynet.call("SIMPLEDB", "lua", "SET_GAME_START", true)
 		local player_count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS")
+		local players = skynet.call("SIMPLEDB", "lua", "GET_PLAYERS")
 		local ghost = math.random(1, player_count)
-		broadcastall_request(proto_pack("start_game", ghost))
+		local index = 1
+		for id, player in pairs(players) do
+			if index == ghost then
+				broadcastall_request(proto_pack("start_game", player.id))
+				break
+			end
+			index = index + 1
+		end
 	end
 end
 
