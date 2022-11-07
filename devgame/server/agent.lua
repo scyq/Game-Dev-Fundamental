@@ -133,9 +133,11 @@ function REQUEST:action()
 end
 
 function REQUEST:start_game_req()
-	print("Game Start....")
 	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START")
+	print("game_start")
+	print(game_start)
 	if game_start == false then
+		print("Game Start....")
 		skynet.call("SIMPLEDB", "lua", "SET_GAME_START", true)
 		local player_count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS")
 		local players = skynet.call("SIMPLEDB", "lua", "GET_PLAYERS")
