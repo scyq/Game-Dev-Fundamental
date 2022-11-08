@@ -130,8 +130,8 @@ local function get_room_player_cnts(room)
 end
 
 -- 处理玩家的登录信息
-function command.LOGIN(player_name, player_password, room)
-	local the_room = get_or_create_room(room)
+function command.LOGIN(player_name, player_password, current_room)
+	local the_room = get_or_create_room(current_room)
 	local player_id = the_room.name2id[player_name]
 
 	if player_id then
@@ -145,7 +145,7 @@ function command.LOGIN(player_name, player_password, room)
 	-- 如果是从未登录过的新用户
 	if player_id == nil then
 		--产生一个新ID
-		player_id = get_room_player_cnts(room) + 1
+		player_id = get_room_player_cnts(current_room) + 1
 		the_room.name2id[player_name] = player_id
 
 		-- 构造一个player，存进后台数据库
@@ -159,7 +159,7 @@ function command.LOGIN(player_name, player_password, room)
 			pos      = { math.random(-10, 10), 0, math.random(-5, 15) },
 			ghost    = 0,
 			freeze   = 0,
-			room     = room,
+			room     = current_room,
 		}
 
 		the_room.players[player_id] = player
