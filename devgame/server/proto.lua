@@ -124,13 +124,14 @@ logout 		3 {
 
 enter_scene 	4 {
 	request {	
-		id 		0 : integer
-		name	1 : string
-		model   2 : string
-		scene	3 : integer
-		pos 	4 : *double
-		ghost   5 : integer
-		freeze  6 : integer
+		room    0 : string
+		id 		1 : integer
+		name	2 : string
+		model   3 : string
+		scene	4 : integer
+		pos 	5 : *double
+		ghost   6 : integer
+		freeze  7 : integer
 	}
 }
 
@@ -190,7 +191,8 @@ start_game 12 {
 
 catch_player 13 {
 	request {
-		id 0 : integer
+		id   0 : integer
+		room 1 : string
 	}
 }
 

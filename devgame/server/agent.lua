@@ -93,23 +93,23 @@ function REQUEST:login()
 				skynet.sleep(500)
 				print("Game Start....")
 				skynet.call("SIMPLEDB", "lua", "SET_GAME_START", self.room, true)
-				local player_count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS", self.room)
-				local players = skynet.call("SIMPLEDB", "lua", "GET_PLAYERS", self.room)
-
+				local final_players = skynet.call("SIMPLEDB", "lua", "GET_PLAYERS", self.room)
 				-- 把所有玩家加入场景
-				for id, player in pairs(players) do
-					send_request(proto_pack("enter_scene", player), client_fd)
-					local ghost = math.random(1, player_count)
-					local index = 1
-					for _id, _player in pairs(players) do
-						if index == ghost then
-							print("Ghost is " .. id)
-							_player.ghost = 1
-							broadcastall_request(proto_pack("start_game", { ghost = id }))
-							break
-						end
-						index = index + 1
-					end
+				for id, _player in pairs(final_players) do
+					broadcastall_request(proto_pack("enter_scene", {
+						room = self.room,
+						id = _player.id,
+						name = _player.name,
+						model = _player.model,
+						scene = _player.scene,
+						pos = _player.pos,
+						ghost = _player.ghost,
+						freeze = _player.freeze,
+					}))
+					-- 四个人随机一个人做鬼
+					local ghost = math.random(1, 4)
+					final_players[ghost].ghost = 1
+					broadcastall_request(proto_pack("catch_player", { id = self.id, room = self.room }))
 					skynet.fork(function()
 						skynet.sleep(200)
 						-- 开始计时
