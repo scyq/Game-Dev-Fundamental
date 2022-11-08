@@ -129,6 +129,23 @@ local function get_room_player_cnts(room)
 	return 0
 end
 
+function command.GET_ROOM(room)
+	if rooms[room] then
+		return rooms[room]
+	end
+	return nil
+end
+
+function command.UPDATE_MODEL(room, player_id, model)
+	if rooms[room] then
+		if rooms[room].players[player_id] then
+			rooms[room].players[player_id].model = model
+			return true
+		end
+	end
+	return false
+end
+
 -- 处理玩家的登录信息
 function command.LOGIN(player_name, player_password, current_room)
 	local the_room = get_or_create_room(current_room)

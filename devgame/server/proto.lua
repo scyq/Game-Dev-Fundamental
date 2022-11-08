@@ -76,6 +76,14 @@ freeze_player_req 10 {
 	}
 }
 
+update_player_model_req 11 {
+	request {
+		id 		0 : integer
+		room    1 : string
+		model 	2 : string
+	}
+}
+
 ]]
 
 proto.s2c = sprotoparser.parse [[
@@ -203,6 +211,14 @@ enter_room 16 {
 		room 1  : string
 		name 2  : string
 		model 3 : string
+	}
+}
+
+update_player_model_bc 17 {
+	request {
+		id 		0 : integer
+		room    1 : string
+		model 	2 : string
 	}
 }
 

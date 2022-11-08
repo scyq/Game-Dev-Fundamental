@@ -65,29 +65,17 @@ function REQUEST:login()
 	print("player login... ", self.name, player_id, self.room)
 
 	-- TODO 只广播给本房间
-	print("broadcast login")
-	print("room", self.room)
-	print("player_id", player_id)
-	print("name", self.name)
 	-- 向所有玩家广播新玩家的登陆信息
 	broadcastall_request(proto_pack("enter_room", { id = player_id, name = self.name, room = self.room, model = "F1" }))
-	print("broadcast login end")
 
-
-	print("send login")
 	-- 让该玩家加载所有已经在房间中的玩家
 	local players = skynet.call("SIMPLEDB", "lua", "get_players", self.room)
 	for _, player in ipairs(players) do
-		print("id", player.id)
-		print("name", player.name)
-		print("room", player.room)
-		print("model", player.model)
 		if player.id ~= player_id then
 			send_request(proto_pack("enter_room", { id = player.id, name = player.name, room = player.room, model = player.model })
 				, client_fd)
 		end
 	end
-	print("send login end")
 
 
 	-- -- -- 让 新玩家 加载场景，并把自己加入场景
@@ -132,6 +120,13 @@ function REQUEST:login()
 	-- 	end
 
 	-- end)
+end
+
+function REQUEST:update_player_model_req()
+	local check = skynet.call("SIMPLEDB", "lua", "UPDATE_MODEL", self.room, self.id, self.model)
+	if check then
+		broadcastall_request(proto_pack("update_player_model_bc", { id = self.id, room = self.room, model = self.model }))
+	end
 end
 
 function REQUEST:snapshoot()
