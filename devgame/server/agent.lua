@@ -54,6 +54,8 @@ function REQUEST:login()
 	-- 与后台数据库交互，获取玩家ID。如果是从未登录过的玩家，将会自动分配一个新的ID
 	player_id = skynet.call("SIMPLEDB", "lua", "login", self.name, self.password, self.room)
 
+	print(player_id)
+
 	-- 向新玩家告知他被分配到的ID
 	send_request(proto_pack("login", { id = player_id, name = self.name, room = self.room }), client_fd)
 	print(self.name .. " 登录到房间 " .. self.room)

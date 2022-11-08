@@ -132,6 +132,7 @@ end
 
 -- 处理玩家的登录信息
 function command.LOGIN(player_name, player_password, room)
+	print("尝试登录到" .. room)
 	local the_room = get_or_create_room(room)
 	local player_id = the_room.name2id[player_name]
 
