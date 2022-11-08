@@ -110,12 +110,28 @@ function REQUEST:login()
 
 				skynet.fork(function()
 					-- 等待大家加入场景
-					skynet.sleep(300)
+					skynet.sleep(150)
 					-- 四个人随机一个人做鬼
 					local ghost = math.random(1, 4)
 					local check_ghost = skynet.call("SIMPLEDB", "lua", "HUMAN2GHOST", self.room, ghost)
 					print("calling ghost ", check_ghost)
 					broadcastall_request(proto_pack("catch_player", { id = ghost, room = self.room }))
+
+					-- TODO 改为全局计时器
+					-- 这里只能做妥协，把最后一个人当作房主
+					-- 用它来做计时器，所以如果这个人断线，游戏就会爆炸哈哈哈哈哈
+					skynet.fork(function()
+						local total_time = 3 * 60 * 100
+						while true do
+							skynet.sleep(100)
+							total_time = total_time - 100
+							broadcast_request(proto_pack("sync_timer", { room = self.room, time = total_time }))
+
+							if total_time <= 0 then
+								-- 游戏结束
+							end
+						end
+					end)
 				end)
 			end
 		)
@@ -254,8 +270,8 @@ end
 
 function CMD.disconnect(fd)
 	skynet.send(WATCHDOG, "lua", "logout", player_id)
-	skynet.send("SIMPLEDB", "lua", "logout", player_id)
-	local pack = proto_pack("logout", { id = player_id })
+	skynet.send("SIMPLEDB", "lua", "logout", room, player_id)
+	local pack = proto_pack("logout", { id = player_id, room = room })
 	broadcast_request(pack, fd)
 	skynet.exit()
 end

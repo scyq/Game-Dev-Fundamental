@@ -24,7 +24,8 @@ login 		2 {
 
 logout 		3 {
 	request {
-		id 	0  : integer
+		id 	 0  : integer
+		room 1  : string
 	}	
 }
 
@@ -121,7 +122,8 @@ login 		2 {
 
 logout 		3 {
 	request {
-		id 	0  : integer
+		id 	 0  : integer
+		room 1  : string
 	}	
 }
 
@@ -227,6 +229,13 @@ update_player_model_bc 17 {
 		id 		0 : integer
 		room    1 : string
 		model 	2 : string
+	}
+}
+
+sync_timer 18 {
+	request {
+		room 0 : string
+		time 1 : integer
 	}
 }
 

@@ -192,21 +192,16 @@ function command.LOGIN(player_name, player_password, current_room)
 end
 
 -- 处理玩家的登出信息
-function command.LOGOUT(player_id)
+function command.LOGOUT(room, player_id)
 	if player_id == nil then
 		return
 	end
 	skynet.error("logout:" .. player_id)
 
-	-- 修改数据库中的玩家状态
-	if players[player_id] then
-		skynet.error("online:" .. tostring(players[player_id].online))
-		players[player_id].online = false
-		skynet.error("online:" .. tostring(players[player_id].online))
-	end
-
-	for id, player in pairs(players) do
-		skynet.error("player[" .. id .. "] online:" .. tostring(player.online))
+	if rooms[room] then
+		if rooms[room].players[player_id] then
+			rooms[room].players[player_id].online = false
+		end
 	end
 
 end
