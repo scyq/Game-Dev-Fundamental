@@ -125,6 +125,7 @@ function REQUEST:start_game_req()
 		for id, player in pairs(players) do
 			if index == ghost then
 				print("Ghost is " .. id)
+				player.ghost = true
 				broadcastall_request(proto_pack("start_game", { ghost = id }))
 				break
 			end
@@ -136,12 +137,22 @@ end
 function REQUEST:catch_player_req()
 	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START")
 	if game_start == true then
-		broadcastall_request(proto_pack("catch_player", { id = self.id }))
+		local check = skynet.call("SIMPLEDB", "lua", "HUMAN2GHOST", self.id)
+		if check == true then
+			broadcastall_request(proto_pack("catch_player", { id = self.id }))
+		end
 	end
 end
 
+-- Save就是Unfreeze
 function REQUEST:save_player_req()
+	skynet.call("SIMPLEDB", "lua", "UNFREEZE", self.id)
 	broadcastall_request(proto_pack("save_player", { id = self.id }))
+end
+
+function REQUEST:freeze_player_req()
+	skynet.call("SIMPLEDB", "lua", "FREEZE", self.id)
+	broadcastall_request(proto_pack("freeze_player", { id = self.id }))
 end
 
 local function request(name, args, response)

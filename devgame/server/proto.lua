@@ -70,6 +70,12 @@ save_player_req 9 {
 	}
 }
 
+freeze_player_req 10 {
+	request {
+		id 		0 : integer
+	}
+}
+
 ]]
 
 proto.s2c = sprotoparser.parse [[
@@ -179,6 +185,12 @@ catch_player 13 {
 }
 
 save_player 14 {
+	request {
+		id 0 : integer
+	}
+}
+
+freeze_player 15 {
 	request {
 		id 0 : integer
 	}
