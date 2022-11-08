@@ -9,15 +9,12 @@ else
 	package.path = package.path .. ";/mnt/c/scyq/Game/dev-basic/Game-dev-fundamental/" .. current_folder .. "/?.lua"
 end
 
+
+local rooms = {}
+
 local clientReady = {}
 local playerName = {}
-
 local command = {}
-
-local players = {}
-local name2id = {}
-
-local max_actor_id = 10000
 
 local game_start = false
 
@@ -103,14 +100,45 @@ function command.UNFREEZE(id)
 	return false
 end
 
+local function create_new_room(room)
+	if rooms[room] then
+		return false
+	end
+	rooms[room] = {
+		state = "waiting",
+		players = {},
+		name2id = {}
+	}
+end
+
+local function get_or_create_room(room)
+	if rooms[room] then
+		return rooms[room]
+	end
+	create_new_room(room)
+	return rooms[room]
+end
+
+local function get_room_player_cnts(room)
+	local index = 0
+	if rooms[room] then
+		for id, player in pairs(rooms[room].players) do
+			index = index + 1
+		end
+		return index
+	end
+	return 0
+end
+
 -- 处理玩家的登录信息
-function command.LOGIN(player_name, player_password, player_model)
-	local player_id = name2id[player_name]
+function command.LOGIN(player_name, player_password, room)
+	local the_room = get_or_create_room(room)
+	local player_id = the_room.name2id[player_name]
 
 	if player_id then
-		if players[player_id].online then
+		if the_room.players[player_id].online then
 			return -1 --用户已经登陆
-		elseif players[player_id].password ~= player_password then
+		elseif the_room.players[player_id].password ~= player_password then
 			return -2 --密码错误
 		end
 	end
@@ -118,32 +146,25 @@ function command.LOGIN(player_name, player_password, player_model)
 	-- 如果是从未登录过的新用户
 	if player_id == nil then
 		--产生一个新ID
-		player_id = max_actor_id
-		max_actor_id = max_actor_id + 1
-		name2id[player_name] = player_id
-		print(">>>>>>>>>>>>>>")
-		print(player_id, max_actor_id)
+		player_id = get_room_player_cnts(room) + 1
+		the_room.name2id[player_name] = player_id
 
 		-- 构造一个player，存进后台数据库
 		local player = {
 			id       = player_id,
 			name     = player_name,
 			password = player_password,
-			model    = player_model,
+			model    = nil,
 			scene    = 0,
 			online   = true,
 			pos      = { math.random(-10, 10), 0, math.random(-5, 15) },
-			facing   = { 1.0, 0.0 },
 			ghost    = 0,
 			freeze   = 0,
 		}
 
-		for i, v in pairs(player) do
-			print(i, v)
-		end
-		players[player_id] = player
+		the_room.players[player_id] = player
 	else
-		players[player_id].online = true
+		the_room.players[player_id].online = true
 	end
 
 	return player_id

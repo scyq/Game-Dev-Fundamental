@@ -18,7 +18,7 @@ login 		2 {
 	request {
 		name 		0 : string
 		password 	1 : string
-		model       2 : string
+		room 		2 : string
 	}
 }
 
@@ -28,16 +28,7 @@ logout 		3 {
 	}	
 }
 
-action		 4 {
-	request {
-		id 		0 : integer
-		frame	1 : integer
-		input	2 : *integer 
-		facing	3 : *double
-	}
-}
-
-snapshoot	5 {
+snapshoot	4 {
 	request {
 		id 		0 : integer
 		info	1 : *double 
@@ -46,31 +37,31 @@ snapshoot	5 {
 	}
 }
 
-dead		6 {
+dead		5 {
 	request {
 		id 		0 : integer
 	}
 }
 
-start_game_req 7 {
+start_game_req 6 {
 	request {
 		id 		0 : integer
 	}
 }
 
-catch_player_req 8 {
+catch_player_req 7 {
 	request {
 		id 		0 : integer
 	}
 }
 
-save_player_req 9 {
+save_player_req 8 {
 	request {
 		id 		0 : integer
 	}
 }
 
-freeze_player_req 10 {
+freeze_player_req 9 {
 	request {
 		id 		0 : integer
 	}
@@ -84,14 +75,6 @@ proto.s2c = sprotoparser.parse [[
 	session 	1 : integer
 }
 
-.action {
-		id 		0 : integer
-		frame	1 : integer
-		input	2 : *integer 
-		facing	3 : *double
-}
-
-
 heartbeat 		1 {
 	request {
 		frame 		0 : integer
@@ -103,7 +86,7 @@ login 		2 {
 	request {
 		id 		0 : integer
 		name	1 : string
-		model   2 : string
+		room    2 : string
 	}
 }
 
@@ -121,9 +104,8 @@ enter_scene 	4 {
 		model   2 : string
 		scene	3 : integer
 		pos 	4 : *double
-		facing	5 : *double
-		ghost   6 : integer
-		freeze  7 : integer
+		ghost   5 : integer
+		freeze  6 : integer
 	}
 }
 
@@ -145,16 +127,7 @@ sync_info 	7 {
 	}
 }
 
-actionBC 8 {
-	request {
-		id 		0 : integer
-		frame	1 : integer
-		input	2 : *integer 
-		facing	3 : *double
-	}
-}
-
-snapshootBC 9 {
+snapshootBC 8 {
 	request {
 		id 		0 : integer
 		info	1 : *double 
@@ -163,36 +136,36 @@ snapshootBC 9 {
 	}
 }
 
-playerCountBC 10 {
+playerCountBC 9 {
 	request {
 		count 0 : integer
 	}
 }
 
-ready_start 11 {
+ready_start 10 {
 	request {
 	}
 }
 
-start_game 12 {
+start_game 11 {
 	request {
 		ghost 0 : integer
 	}
 }
 
-catch_player 13 {
+catch_player 12 {
 	request {
 		id 0 : integer
 	}
 }
 
-save_player 14 {
+save_player 13 {
 	request {
 		id 0 : integer
 	}
 }
 
-freeze_player 15 {
+freeze_player 14 {
 	request {
 		id 0 : integer
 	}
