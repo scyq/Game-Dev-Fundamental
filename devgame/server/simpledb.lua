@@ -75,8 +75,8 @@ end
 
 function command.HUMAN2GHOST(id)
 	if players[id] then
-		if players[id].freeze == false then
-			players[id].ghost = true
+		if players[id].freeze == 0 then
+			players[id].ghost = 1
 			return true
 		end
 	end
@@ -85,8 +85,8 @@ end
 
 function command.FREEZE(id)
 	if players[id] then
-		if players[id].ghost == false then
-			players[id].freeze = true
+		if players[id].ghost == 0 then
+			players[id].freeze = 1
 			return true
 		end
 	end
@@ -95,8 +95,8 @@ end
 
 function command.UNFREEZE(id)
 	if players[id] then
-		if players[id].ghost == false then
-			players[id].freeze = false
+		if players[id].ghost == 0 then
+			players[id].freeze = 0
 			return true
 		end
 	end
@@ -134,8 +134,8 @@ function command.LOGIN(player_name, player_password, player_model)
 			online   = true,
 			pos      = { math.random(-10, 10), 0, math.random(-5, 15) },
 			facing   = { 1.0, 0.0 },
-			ghost    = false,
-			freeze   = false,
+			ghost    = 0,
+			freeze   = 0,
 		}
 
 		for i, v in pairs(player) do
