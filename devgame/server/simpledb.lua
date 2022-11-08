@@ -159,6 +159,7 @@ function command.LOGIN(player_name, player_password, room)
 			pos      = { math.random(-10, 10), 0, math.random(-5, 15) },
 			ghost    = 0,
 			freeze   = 0,
+			room     = room,
 		}
 
 		the_room.players[player_id] = player

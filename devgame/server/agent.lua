@@ -70,8 +70,10 @@ function REQUEST:login()
 	-- 让该玩家加载所有已经在房间中的玩家
 	local players = skynet.call("SIMPLEDB", "lua", "get_players", self.room)
 	for _, player in ipairs(players) do
-		send_request(proto_pack("enter_room", { id = player.id, name = player.name, room = player.room, model = player.model })
-			, client_fd)
+		if player.id ~= player_id then
+			send_request(proto_pack("enter_room", { id = player.id, name = player.name, room = player.room, model = player.model })
+				, client_fd)
+		end
 	end
 
 
