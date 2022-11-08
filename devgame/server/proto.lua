@@ -197,6 +197,15 @@ freeze_player 15 {
 	}
 }
 
+enter_room 16 {
+	request {
+		id 0    : integer
+		room 1  : string
+		name 2  : string
+		model 3 : string
+	}
+}
+
 ]]
 
 return proto

@@ -35,11 +35,10 @@ function command.UPDATE_PLAYER(id, key, value)
 	end
 end
 
-function command.GET_PLAYERS()
+function command.GET_PLAYERS(room)
 	local online_players = {}
-	for i, player in pairs(players) do
-		skynet.error("player[" .. i .. "] online:" .. tostring(player.online))
-		if players[i].online then
+	for i, player in pairs(rooms[room].players) do
+		if rooms[room].players[i].online then
 			online_players[i] = player
 		end
 	end
@@ -132,7 +131,6 @@ end
 
 -- 处理玩家的登录信息
 function command.LOGIN(player_name, player_password, room)
-	print("尝试登录到" .. room)
 	local the_room = get_or_create_room(room)
 	local player_id = the_room.name2id[player_name]
 
@@ -155,7 +153,7 @@ function command.LOGIN(player_name, player_password, room)
 			id       = player_id,
 			name     = player_name,
 			password = player_password,
-			model    = nil,
+			model    = "F1",
 			scene    = 0,
 			online   = true,
 			pos      = { math.random(-10, 10), 0, math.random(-5, 15) },
