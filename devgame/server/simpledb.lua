@@ -65,21 +65,25 @@ function command.SET_GAME_START(room, value)
 	return false
 end
 
-function command.HUMAN2GHOST(id)
-	if players[id] then
-		if players[id].freeze == 0 then
-			players[id].ghost = 1
+function command.HUMAN2GHOST(room, id)
+	if rooms[room] then
+		if rooms[room].players[id] then
+			if rooms[room].players[id].freeze == 0 then
+				rooms[room].player[id].ghost = 1
+			end
 			return true
 		end
 	end
 	return false
 end
 
-function command.FREEZE(id)
-	if players[id] then
-		if players[id].ghost == 0 then
-			players[id].freeze = 1
-			return true
+function command.FREEZE(room, id)
+	if rooms[room] then
+		if rooms[room].players[id] then
+			if rooms[room].players[id].ghost == 0 then
+				rooms[room].players[id].freeze = 1
+				return true
+			end
 		end
 	end
 	return false

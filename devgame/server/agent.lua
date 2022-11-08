@@ -106,57 +106,18 @@ function REQUEST:login()
 						ghost = _player.ghost,
 						freeze = _player.freeze,
 					}))
+				end
+				skynet.fork(function()
+					-- 等待大家加入场景
+					skynet.sleep(300)
 					-- 四个人随机一个人做鬼
 					local ghost = math.random(1, 4)
-					final_players[ghost].ghost = 1
+					local check_ghost = skynet.call("SIMPLEDB", "lua", "HUMAN2GHOST", self.room, ghost)
 					broadcastall_request(proto_pack("catch_player", { id = self.id, room = self.room }))
-					skynet.fork(function()
-						skynet.sleep(200)
-						-- 开始计时
-
-					end)
-				end
+				end)
 			end
 		)
 	end
-
-	-- 由于加载场景可能耗费较长时间，为了防止玩家加载不完场景，这里需要先等待一段时间再发送后续消息
-	-- skynet提供了休眠函数：skynet.sleep(time)。调用后，当前进程将休眠
-	-- 但是，所有玩家是共用同一个agent的，如果这个agent休眠了，那其他玩家怎么办呢？
-	-- 我们可以复制一个新的agent，只让新的agent休眠，让原来的agent继续服务其他玩家
-	-- skynet提供了linux格式的fork函数，可以用来“复制”进程
-	-- skynet.fork(function()
-	-- 	-- fork：复制当前进程，然后让新进程执行括号里的代码，而旧进程将跳过这段代码
-	-- 	-- 这里fork的括号里写的是一个function，所以就会执行这个function
-
-	-- 	-- 等待一段时间（1s）
-	-- 	skynet.sleep(100)
-
-	-- 	-- 让 其他玩家 把 新玩家 加入场景
-	-- 	local player = skynet.call("SIMPLEDB", "lua", "get_player", player_id)
-	-- 	broadcast_request(proto_pack("enter_scene", player), client_fd)
-
-
-	-- 	-- 获得现在人数
-	-- 	local player_count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS")
-
-	-- 	-- 广播现在人数
-	-- 	broadcastall_request(proto_pack("playerCountBC", { count = player_count }))
-
-	-- 	-- TODO 最后一个进入游戏的玩家判定是否可以开始游戏
-	-- 	if player_count == 3 then
-	-- 		broadcastall_request(proto_pack("ready_start", nil))
-	-- 	end
-
-	-- 	-- 让 新玩家 把 其他玩家 加入场景
-	-- 	local players = skynet.call("SIMPLEDB", "lua", "get_players")
-	-- 	for id, player in pairs(players) do
-	-- 		if id ~= player_id then
-	-- 			send_request(proto_pack("enter_scene", player), client_fd)
-	-- 		end
-	-- 	end
-
-	-- end)
 end
 
 function REQUEST:update_player_model_req()
@@ -203,24 +164,21 @@ function REQUEST:start_game_req()
 end
 
 function REQUEST:catch_player_req()
-	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START")
-	if game_start == true then
-		local check = skynet.call("SIMPLEDB", "lua", "HUMAN2GHOST", self.id)
-		if check == true then
-			broadcastall_request(proto_pack("catch_player", { id = self.id }))
-		end
+	local check = skynet.call("SIMPLEDB", "lua", "HUMAN2GHOST", self.room, self.id)
+	if check == true then
+		broadcastall_request(proto_pack("catch_player", { id = self.id, room = self.room }))
 	end
 end
 
 -- Save就是Unfreeze
 function REQUEST:save_player_req()
 	skynet.call("SIMPLEDB", "lua", "UNFREEZE", self.id)
-	broadcastall_request(proto_pack("save_player", { id = self.id }))
+	broadcastall_request(proto_pack("save_player", { id = self.id, room = self.room }))
 end
 
 function REQUEST:freeze_player_req()
-	skynet.call("SIMPLEDB", "lua", "FREEZE", self.id)
-	broadcastall_request(proto_pack("freeze_player", { id = self.id }))
+	skynet.call("SIMPLEDB", "lua", "FREEZE", self.room, self.id)
+	broadcastall_request(proto_pack("freeze_player", { id = self.id, room = self.room }))
 end
 
 local function request(name, args, response)

@@ -61,18 +61,21 @@ start_game_req 7 {
 catch_player_req 8 {
 	request {
 		id 		0 : integer
+		room	1 : string
 	}
 }
 
 save_player_req 9 {
 	request {
 		id 		0 : integer
+		room	1 : string
 	}
 }
 
 freeze_player_req 10 {
 	request {
 		id 		0 : integer
+		room	1 : string
 	}
 }
 
@@ -198,13 +201,15 @@ catch_player 13 {
 
 save_player 14 {
 	request {
-		id 0 : integer
+		id   0 : integer
+		room 1 : string
 	}
 }
 
 freeze_player 15 {
 	request {
-		id 0 : integer
+		id   0 : integer
+		room 1 : string
 	}
 }
 
