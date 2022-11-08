@@ -104,7 +104,7 @@ function REQUEST:login()
 					for _id, _player in pairs(players) do
 						if index == ghost then
 							print("Ghost is " .. id)
-							_player.ghost = true
+							_player.ghost = 1
 							broadcastall_request(proto_pack("start_game", { ghost = id }))
 							break
 						end
@@ -116,7 +116,6 @@ function REQUEST:login()
 
 					end)
 				end
-
 			end
 		)
 	end

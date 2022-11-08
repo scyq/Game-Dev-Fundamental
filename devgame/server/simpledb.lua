@@ -37,13 +37,6 @@ function command.GET_PLAYERS(room)
 	return online_players
 end
 
-function command.GET_PLAYER(id)
-	if players[id] then
-		return players[id]
-	end
-	return nil
-end
-
 function command.GET_PLAYER_COUNTS(room)
 	local cnt = 0
 	local players = rooms[room].players
@@ -176,7 +169,7 @@ function command.LOGIN(player_name, player_password, current_room)
 			model    = "F1",
 			scene    = 0,
 			online   = true,
-			pos      = { math.random(-220, 40), 0, math.random(-60, 140) },
+			pos      = { math.random(-90, 50), 0, math.random(-25, 90) },
 			ghost    = 0,
 			freeze   = 0,
 			room     = current_room,
