@@ -20,6 +20,7 @@ local host
 local proto_pack
 local client_fd
 local player_id
+local room
 
 local CMD = {}
 local REQUEST = {}
@@ -60,6 +61,8 @@ function REQUEST:login()
 		return
 	end
 
+	room = self.room
+
 	-- 向新玩家告知他被分配到的ID
 	send_request(proto_pack("login", { id = player_id, name = self.name, room = self.room }), client_fd)
 	print("player login... ", self.name, player_id, self.room)
@@ -84,12 +87,6 @@ function REQUEST:login()
 		-- 广播游戏开始
 		broadcastall_request(proto_pack("ready_start", { room = self.room }))
 	end
-
-
-	-- -- -- 让 新玩家 加载场景，并把自己加入场景
-	-- -- local player = skynet.call("SIMPLEDB", "lua", "get_player", player_id)
-	-- -- send_request(proto_pack("enter_scene", player), client_fd)
-	-- -- skynet.send(WATCHDOG, "lua", "login", player_id)
 
 	-- 由于加载场景可能耗费较长时间，为了防止玩家加载不完场景，这里需要先等待一段时间再发送后续消息
 	-- skynet提供了休眠函数：skynet.sleep(time)。调用后，当前进程将休眠
@@ -143,23 +140,34 @@ function REQUEST:snapshoot()
 end
 
 function REQUEST:start_game_req()
-	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START")
+	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START", self.room)
 	if game_start == false then
 		print("Game Start....")
-		skynet.call("SIMPLEDB", "lua", "SET_GAME_START", true)
-		local player_count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS")
-		local players = skynet.call("SIMPLEDB", "lua", "GET_PLAYERS")
-		local ghost = math.random(1, player_count)
-		local index = 1
+		skynet.call("SIMPLEDB", "lua", "SET_GAME_START", self.room, true)
+		local player_count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS", self.room)
+		local players = skynet.call("SIMPLEDB", "lua", "GET_PLAYERS", self.room)
+
+		-- 把所有玩家加入场景
 		for id, player in pairs(players) do
-			if index == ghost then
-				print("Ghost is " .. id)
-				player.ghost = true
-				broadcastall_request(proto_pack("start_game", { ghost = id }))
-				break
+			send_request(proto_pack("enter_scene", player), client_fd)
+			local ghost = math.random(1, player_count)
+			local index = 1
+			for _id, _player in pairs(players) do
+				if index == ghost then
+					print("Ghost is " .. id)
+					_player.ghost = true
+					broadcastall_request(proto_pack("start_game", { ghost = id }))
+					break
+				end
+				index = index + 1
 			end
-			index = index + 1
+			skynet.fork(function()
+				skynet.sleep(200)
+				-- 开始计时
+
+			end)
 		end
+
 	end
 end
 

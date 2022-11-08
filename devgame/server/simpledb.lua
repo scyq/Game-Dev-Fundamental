@@ -16,8 +16,6 @@ local clientReady = {}
 local playerName = {}
 local command = {}
 
-local game_start = false
-
 function command.REMOVE(id)
 	local name = playerName[id]
 	clientReady[id] = nil
@@ -27,12 +25,6 @@ end
 
 function command.GETCLIENTREADY()
 	return clientReady
-end
-
-function command.UPDATE_PLAYER(id, key, value)
-	if players[id] then
-		players[id][key] = value
-	end
 end
 
 function command.GET_PLAYERS(room)
@@ -65,13 +57,19 @@ function command.GET_PLAYER_COUNTS(room)
 	return cnt
 end
 
-function command:GET_GAME_START()
-	return game_start
+function command:GET_GAME_START(room)
+	if rooms[room] then
+		return rooms[room].game_start
+	end
+	return false
 end
 
-function command.SET_GAME_START(value)
-	game_start = value
-	return true
+function command.SET_GAME_START(room, value)
+	if rooms[room] then
+		rooms[room].game_start = value
+		return true
+	end
+	return false
 end
 
 function command.HUMAN2GHOST(id)
@@ -109,7 +107,7 @@ local function create_new_room(room)
 		return false
 	end
 	rooms[room] = {
-		state = "waiting",
+		game_start = false,
 		players = {},
 		name2id = {}
 	}
@@ -178,7 +176,7 @@ function command.LOGIN(player_name, player_password, current_room)
 			model    = "F1",
 			scene    = 0,
 			online   = true,
-			pos      = { math.random(-10, 10), 0, math.random(-5, 15) },
+			pos      = { math.random(-220, 40), 0, math.random(-60, 140) },
 			ghost    = 0,
 			freeze   = 0,
 			room     = current_room,

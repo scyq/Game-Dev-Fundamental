@@ -54,7 +54,7 @@ dead		6 {
 
 start_game_req 7 {
 	request {
-		id 		0 : integer
+		room 	0 : string
 	}
 }
 
