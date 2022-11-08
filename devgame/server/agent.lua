@@ -107,6 +107,7 @@ function REQUEST:login()
 						freeze = _player.freeze,
 					}))
 				end
+
 				skynet.fork(function()
 					-- 等待大家加入场景
 					skynet.sleep(300)
@@ -133,36 +134,36 @@ function REQUEST:snapshoot()
 		{ id = self.id, info = self.info, anim = self.anim, animtime = self.animtime }))
 end
 
-function REQUEST:start_game_req()
-	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START", self.room)
-	if game_start == false then
-		print("Game Start....")
-		skynet.call("SIMPLEDB", "lua", "SET_GAME_START", self.room, true)
-		local player_count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS", self.room)
-		local players = skynet.call("SIMPLEDB", "lua", "GET_PLAYERS", self.room)
+-- function REQUEST:start_game_req()
+-- 	local game_start = skynet.call("SIMPLEDB", "lua", "GET_GAME_START", self.room)
+-- 	if game_start == false then
+-- 		print("Game Start....")
+-- 		skynet.call("SIMPLEDB", "lua", "SET_GAME_START", self.room, true)
+-- 		local player_count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS", self.room)
+-- 		local players = skynet.call("SIMPLEDB", "lua", "GET_PLAYERS", self.room)
 
-		-- 把所有玩家加入场景
-		for id, player in pairs(players) do
-			send_request(proto_pack("enter_scene", player), client_fd)
-			local ghost = math.random(1, player_count)
-			local index = 1
-			for _id, _player in pairs(players) do
-				if index == ghost then
-					print("Ghost is " .. id)
-					_player.ghost = true
-					broadcastall_request(proto_pack("start_game", { ghost = id }))
-					break
-				end
-				index = index + 1
-			end
-			skynet.fork(function()
-				skynet.sleep(200)
-				-- 开始计时
+-- 		-- 把所有玩家加入场景
+-- 		for id, player in pairs(players) do
+-- 			send_request(proto_pack("enter_scene", player), client_fd)
+-- 			local ghost = math.random(1, player_count)
+-- 			local index = 1
+-- 			for _id, _player in pairs(players) do
+-- 				if index == ghost then
+-- 					print("Ghost is " .. id)
+-- 					_player.ghost = true
+-- 					broadcastall_request(proto_pack("start_game", { ghost = id }))
+-- 					break
+-- 				end
+-- 				index = index + 1
+-- 			end
+-- 			skynet.fork(function()
+-- 				skynet.sleep(200)
+-- 				-- 开始计时
 
-			end)
-		end
-	end
-end
+-- 			end)
+-- 		end
+-- 	end
+-- end
 
 function REQUEST:catch_player_req()
 	local check = skynet.call("SIMPLEDB", "lua", "HUMAN2GHOST", self.room, self.id)
@@ -173,7 +174,7 @@ end
 
 -- Save就是Unfreeze
 function REQUEST:save_player_req()
-	skynet.call("SIMPLEDB", "lua", "UNFREEZE", self.id)
+	skynet.call("SIMPLEDB", "lua", "UNFREEZE", self.room, self.id)
 	broadcastall_request(proto_pack("save_player", { id = self.id, room = self.room }))
 end
 

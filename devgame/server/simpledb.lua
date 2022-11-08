@@ -71,7 +71,7 @@ function command.HUMAN2GHOST(room, id)
 			print("HUMAN2GHOST")
 			print(rooms[room].players[id].name)
 			if rooms[room].players[id].freeze == 0 then
-				rooms[room].player[id].ghost = 1
+				rooms[room].players[id].ghost = 1
 			end
 			return true
 		end
@@ -91,11 +91,13 @@ function command.FREEZE(room, id)
 	return false
 end
 
-function command.UNFREEZE(id)
-	if players[id] then
-		if players[id].ghost == 0 then
-			players[id].freeze = 0
-			return true
+function command.UNFREEZE(room, id)
+	if rooms[room] then
+		if rooms[room].players[id] then
+			if rooms[room].players[id].ghost == 0 then
+				rooms[room].players[id].freeze = 0
+				return true
+			end
 		end
 	end
 	return false
