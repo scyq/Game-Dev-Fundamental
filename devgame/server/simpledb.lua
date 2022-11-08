@@ -68,6 +68,8 @@ end
 function command.HUMAN2GHOST(room, id)
 	if rooms[room] then
 		if rooms[room].players[id] then
+			print("HUMAN2GHOST")
+			print(rooms[room].players[id].name)
 			if rooms[room].players[id].freeze == 0 then
 				rooms[room].player[id].ghost = 1
 			end

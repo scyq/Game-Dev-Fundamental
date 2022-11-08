@@ -113,6 +113,7 @@ function REQUEST:login()
 					-- 四个人随机一个人做鬼
 					local ghost = math.random(1, 4)
 					local check_ghost = skynet.call("SIMPLEDB", "lua", "HUMAN2GHOST", self.room, ghost)
+					print("calling ghost ", check_ghost)
 					broadcastall_request(proto_pack("catch_player", { id = self.id, room = self.room }))
 				end)
 			end
