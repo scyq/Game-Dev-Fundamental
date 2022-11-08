@@ -28,7 +28,16 @@ logout 		3 {
 	}	
 }
 
-snapshoot	4 {
+action		 4 {
+	request {
+		id 		0 : integer
+		frame	1 : integer
+		input	2 : *integer 
+		facing	3 : *double
+	}
+}
+
+snapshoot	5 {
 	request {
 		id 		0 : integer
 		info	1 : *double 
@@ -37,31 +46,31 @@ snapshoot	4 {
 	}
 }
 
-dead		5 {
+dead		6 {
 	request {
 		id 		0 : integer
 	}
 }
 
-start_game_req 6 {
+start_game_req 7 {
 	request {
 		id 		0 : integer
 	}
 }
 
-catch_player_req 7 {
+catch_player_req 8 {
 	request {
 		id 		0 : integer
 	}
 }
 
-save_player_req 8 {
+save_player_req 9 {
 	request {
 		id 		0 : integer
 	}
 }
 
-freeze_player_req 9 {
+freeze_player_req 10 {
 	request {
 		id 		0 : integer
 	}
@@ -74,6 +83,14 @@ proto.s2c = sprotoparser.parse [[
 	type 		0 : integer
 	session 	1 : integer
 }
+
+.action {
+		id 		0 : integer
+		frame	1 : integer
+		input	2 : *integer 
+		facing	3 : *double
+}
+
 
 heartbeat 		1 {
 	request {
@@ -127,7 +144,16 @@ sync_info 	7 {
 	}
 }
 
-snapshootBC 8 {
+actionBC 8 {
+	request {
+		id 		0 : integer
+		frame	1 : integer
+		input	2 : *integer 
+		facing	3 : *double
+	}
+}
+
+snapshootBC 9 {
 	request {
 		id 		0 : integer
 		info	1 : *double 
@@ -136,36 +162,36 @@ snapshootBC 8 {
 	}
 }
 
-playerCountBC 9 {
+playerCountBC 10 {
 	request {
 		count 0 : integer
 	}
 }
 
-ready_start 10 {
+ready_start 11 {
 	request {
 	}
 }
 
-start_game 11 {
+start_game 12 {
 	request {
 		ghost 0 : integer
 	}
 }
 
-catch_player 12 {
+catch_player 13 {
 	request {
 		id 0 : integer
 	}
 }
 
-save_player 13 {
+save_player 14 {
 	request {
 		id 0 : integer
 	}
 }
 
-freeze_player 14 {
+freeze_player 15 {
 	request {
 		id 0 : integer
 	}
