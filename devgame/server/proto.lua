@@ -122,6 +122,8 @@ enter_scene 	4 {
 		scene	3 : integer
 		pos 	4 : *double
 		facing	5 : *double
+		ghost   6 : integer
+		freeze  7 : integer
 	}
 }
 
