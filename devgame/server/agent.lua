@@ -65,6 +65,10 @@ function REQUEST:login()
 	print("player login... ", self.name, player_id, self.room)
 
 	-- TODO 只广播给本房间
+	print("broadcast login")
+	print("room", self.room)
+	print("player_id", player_id)
+	print("name", self.name)
 	-- 向所有玩家广播新玩家的登陆信息
 	broadcastall_request(proto_pack("enter_room", { id = player_id, name = self.name, room = self.room, model = "F1" }))
 
