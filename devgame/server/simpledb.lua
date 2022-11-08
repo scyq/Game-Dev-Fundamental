@@ -52,10 +52,15 @@ function command.GET_PLAYER(id)
 	return nil
 end
 
-function command.GET_PLAYER_COUNTS()
+function command.GET_PLAYER_COUNTS(room)
 	local cnt = 0
-	for i, player in pairs(players) do
-		cnt = cnt + 1
+	local players = rooms[room].players
+	if players ~= nil then
+		for i, player in pairs(players) do
+			if player.online then
+				cnt = cnt + 1
+			end
+		end
 	end
 	return cnt
 end

@@ -77,6 +77,14 @@ function REQUEST:login()
 		end
 	end
 
+	-- 检测玩家人数是否达到上限
+	local count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS", self.room)
+	if count >= 4 then
+		-- TODO 只广播给本房间
+		-- 广播游戏开始
+		broadcastall_request(proto_pack("ready_start", { room = self.room }))
+	end
+
 
 	-- -- -- 让 新玩家 加载场景，并把自己加入场景
 	-- -- local player = skynet.call("SIMPLEDB", "lua", "get_player", player_id)

@@ -178,6 +178,7 @@ playerCountBC 10 {
 
 ready_start 11 {
 	request {
+		room 0 : string
 	}
 }
 
