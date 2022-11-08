@@ -86,6 +86,39 @@ function REQUEST:login()
 		-- TODO 只广播给本房间
 		-- 广播游戏开始
 		broadcastall_request(proto_pack("ready_start", { room = self.room }))
+
+		-- 由最后进入的人开启游戏
+		skynet.fork(
+			function()
+				skynet.sleep(500)
+				print("Game Start....")
+				skynet.call("SIMPLEDB", "lua", "SET_GAME_START", self.room, true)
+				local player_count = skynet.call("SIMPLEDB", "lua", "GET_PLAYER_COUNTS", self.room)
+				local players = skynet.call("SIMPLEDB", "lua", "GET_PLAYERS", self.room)
+
+				-- 把所有玩家加入场景
+				for id, player in pairs(players) do
+					send_request(proto_pack("enter_scene", player), client_fd)
+					local ghost = math.random(1, player_count)
+					local index = 1
+					for _id, _player in pairs(players) do
+						if index == ghost then
+							print("Ghost is " .. id)
+							_player.ghost = true
+							broadcastall_request(proto_pack("start_game", { ghost = id }))
+							break
+						end
+						index = index + 1
+					end
+					skynet.fork(function()
+						skynet.sleep(200)
+						-- 开始计时
+
+					end)
+				end
+
+			end
+		)
 	end
 
 	-- 由于加载场景可能耗费较长时间，为了防止玩家加载不完场景，这里需要先等待一段时间再发送后续消息
@@ -167,7 +200,6 @@ function REQUEST:start_game_req()
 
 			end)
 		end
-
 	end
 end
 
