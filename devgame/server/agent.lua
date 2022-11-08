@@ -62,6 +62,7 @@ function REQUEST:login()
 
 	-- 向新玩家告知他被分配到的ID
 	send_request(proto_pack("login", { id = player_id, name = self.name, room = self.room }), client_fd)
+	print("player login... ", self.name, player_id, self.room)
 
 	-- TODO 只广播给本房间
 	-- 向所有玩家广播新玩家的登陆信息
