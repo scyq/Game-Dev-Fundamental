@@ -56,7 +56,7 @@ function REQUEST:login()
 
 	-- 向新玩家告知他被分配到的ID
 	send_request(proto_pack("login", { id = player_id, name = self.name, room = self.room }), client_fd)
-	skynet.error(">>>>> db return:" .. player_id)
+	print(self.name .. " 登录到房间 " .. self.room)
 
 	-- 如果 id == -1，说明密码错误或者已经在线，无法登陆
 	if player_id < 0 then
