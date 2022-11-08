@@ -239,6 +239,13 @@ sync_timer 18 {
 	}
 }
 
+game_over 19 {
+	request {
+		room     0 : string
+		result   1 : integer
+	}
+}
+
 ]]
 
 return proto

@@ -65,6 +65,19 @@ function command.SET_GAME_START(room, value)
 	return false
 end
 
+function command.CHECK_GHOST_WIN(room)
+	if rooms[room] then
+		local ghost_win = true
+		for i, player in pairs(rooms[room].players) do
+			if player.online and player.ghost == 0 then
+				return false
+			end
+		end
+		return ghost_win
+	end
+	return false
+end
+
 function command.HUMAN2GHOST(room, id)
 	if rooms[room] then
 		if rooms[room].players[id] then

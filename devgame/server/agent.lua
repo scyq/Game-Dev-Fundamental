@@ -45,11 +45,6 @@ end
 
 function REQUEST:init() end
 
-function REQUEST:dead()
-	print("player dead", self.id)
-	skynet.call("SIMPLEDB", "lua", "dead", self.id)
-end
-
 -- 处理玩家的登录请求
 function REQUEST:login()
 	-- 与后台数据库交互，获取玩家ID。如果是从未登录过的玩家，将会自动分配一个新的ID
@@ -128,7 +123,9 @@ function REQUEST:login()
 							broadcast_request(proto_pack("sync_timer", { room = self.room, time = total_time }))
 
 							if total_time <= 0 then
-								-- 游戏结束
+								-- 游戏结束，人类胜利(1)
+								broadcastall_request(proto_pack("game_over", { room = self.room, result = 1 }))
+								break
 							end
 						end
 					end)
@@ -181,10 +178,18 @@ end
 -- 	end
 -- end
 
+local function check_ghost_win(room)
+	return skynet.call("SIMPLEDB", "lua", "CHECK_GHOST_WIN", room)
+end
+
 function REQUEST:catch_player_req()
 	local check = skynet.call("SIMPLEDB", "lua", "HUMAN2GHOST", self.room, self.id)
 	if check == true then
 		broadcastall_request(proto_pack("catch_player", { id = self.id, room = self.room }))
+	end
+	local ghost_win = check_ghost_win(self.room)
+	if ghost_win == true then
+		broadcastall_request(proto_pack("game_over", { room = self.room, result = 0 }))
 	end
 end
 
