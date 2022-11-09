@@ -67,6 +67,20 @@ end
 
 function command.CHECK_GHOST_WIN(room)
 	if rooms[room] then
+
+		-- 如果全部人都冻住了，鬼也赢
+		local all_freeze = true
+		for i, player in pairs(rooms[room].players) do
+			if player.online and player.freeze == 0 then
+				all_freeze = false
+				break
+			end
+		end
+
+		if all_freeze then
+			return true
+		end
+
 		local ghost_win = true
 		for i, player in pairs(rooms[room].players) do
 			if player.online and player.ghost == 0 then
